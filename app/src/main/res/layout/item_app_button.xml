@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v17.leanback.widget.BaseCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_app_bcv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/default_background">
+
+    <ImageView
+        android:id="@+id/item_app_icon_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/item_app_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="#ffffff" />
+</android.support.v17.leanback.widget.BaseCardView>

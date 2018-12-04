@@ -1,0 +1,50 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.yang.tvlauncher"
+        minSdkVersion 23
+        targetSdkVersion 26
+        versionCode Integer.parseInt(VERSION_CODE)
+        versionName VERSION_NAME
+        buildConfigField("int", "DB_VERSION", db_version)
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:leanback-v17:26.1.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.1.0'
+    implementation 'com.github.bumptech.glide:glide:3.6.0'
+    implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.orhanobut:hawk:2.0.1'
+    implementation 'com.android.support:palette-v7:26.1.0'
+    implementation 'com.android.support:support-compat:26.1.0'
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.3@aar'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.4"
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+}

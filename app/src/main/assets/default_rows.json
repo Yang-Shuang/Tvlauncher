@@ -1,0 +1,27 @@
+[
+  {
+    "rid": 1,
+    "name": "影视",
+    "position": 0
+  },
+  {
+    "rid": 2,
+    "name": "音乐",
+    "position": 1
+  },
+  {
+    "rid": 3,
+    "name": "工具",
+    "position": 2
+  },
+  {
+    "rid": 4,
+    "name": "系统应用",
+    "position": 3
+  },
+  {
+    "rid": 5,
+    "name": "其他",
+    "position": 4
+  }
+]
