@@ -1,7 +1,7 @@
 package com.yang.tvlauncher.request;
 
 import com.yang.tvlauncher.utils.NetUitls;
-import com.yang.tvlauncher.utils.StringUil;
+import com.yang.tvlauncher.utils.StringUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,7 +34,7 @@ public class IqiyiRequest extends BaseRequest {
                                 HashMap<String, String> map = new HashMap<>();
                                 String imageUrl = "";
                                 String data_jpg_img = element.attr("data-jpg-img");
-                                if (StringUil.isEmpty(data_jpg_img)) {
+                                if (StringUtil.isEmpty(data_jpg_img)) {
                                     String style = element.attr(":style");
                                     String back = style.substring(style.indexOf("url(") + 4, style.indexOf(")'"));
                                     imageUrl = "http:" + back;

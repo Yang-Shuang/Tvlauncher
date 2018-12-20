@@ -5,6 +5,7 @@
     <color name="search_opaque">#ffaa3f</color>
     <color name="selected_background">#ffaa3f</color>
     <color name="default_background">#3d3d3d</color>
+    <color name="trans_default_background">#663d3d3d</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

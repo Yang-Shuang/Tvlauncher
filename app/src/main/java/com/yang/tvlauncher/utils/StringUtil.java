@@ -5,7 +5,7 @@ package com.yang.tvlauncher.utils;
  * yangshuang on 2018/11/28.
  */
 
-public class StringUil {
+public class StringUtil {
     public static boolean isEmpty(String s){
         return s == null || s.equals("");
     }

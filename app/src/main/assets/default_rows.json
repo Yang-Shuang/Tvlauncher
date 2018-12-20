@@ -15,13 +15,18 @@
     "position": 2
   },
   {
-    "rid": 4,
-    "name": "系统应用",
+    "rid": 6,
+    "name": "其他",
     "position": 3
   },
   {
-    "rid": 5,
-    "name": "其他",
+    "rid": 4,
+    "name": "系统应用",
     "position": 4
+  },
+  {
+    "rid": 5,
+    "name": "系统服务",
+    "position": 5
   }
 ]

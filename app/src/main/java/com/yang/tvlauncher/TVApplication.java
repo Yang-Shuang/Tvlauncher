@@ -2,6 +2,8 @@ package com.yang.tvlauncher;
 
 import android.app.Application;
 
+import com.yang.tvlauncher.utils.AppUtil;
+import com.yang.tvlauncher.utils.ImageManager;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.ToastUtil;
 
@@ -18,5 +20,7 @@ public class TVApplication extends Application {
 
         ScreenUtil.init(this);
         ToastUtil.init(this);
+        ImageManager.init();
+        AppUtil.init(this);
     }
 }

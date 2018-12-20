@@ -1,7 +1,7 @@
 package com.yang.tvlauncher.request;
 
 import com.yang.tvlauncher.utils.NetUitls;
-import com.yang.tvlauncher.utils.StringUil;
+import com.yang.tvlauncher.utils.StringUtil;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,11 +34,11 @@ public class YoukuRequest extends BaseRequest {
                                 HashMap<String, String> map = new HashMap<>();
                                 String imageUrl = "";
                                 String style = element.attr("style");
-                                if (!StringUil.isEmpty(style) && style.contains("url(")) {
+                                if (!StringUtil.isEmpty(style) && style.contains("url(")) {
                                     imageUrl = "http:" + style.substring(style.indexOf("url(") + 5, style.indexOf("')"));
                                 } else {
                                     String _lazy = element.attr("_lazy");
-                                    if (!StringUil.isEmpty(_lazy) && _lazy.contains("url("))
+                                    if (!StringUtil.isEmpty(_lazy) && _lazy.contains("url("))
                                         imageUrl = "http:" + _lazy.substring(_lazy.indexOf("url(") + 5, _lazy.indexOf("')"));
                                 }
                                 Element c = element.child(0);

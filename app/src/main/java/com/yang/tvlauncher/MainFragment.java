@@ -3,15 +3,12 @@ package com.yang.tvlauncher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.BrowseFrameLayout;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
@@ -19,23 +16,14 @@ import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
-import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v17.leanback.widget.ScaleFrameLayout;
-import android.support.v17.leanback.widget.VerticalGridView;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yang.tvlauncher.auto.BrowseErrorActivity;
-import com.yang.tvlauncher.auto.DetailsActivity;
-import com.yang.tvlauncher.auto.Movie;
+import com.yang.tvlauncher.presenter.AppButtonHolder;
 import com.yang.tvlauncher.presenter.AppButtonPresenter;
 import com.yang.tvlauncher.presenter.VideoButtonHolder;
 import com.yang.tvlauncher.presenter.VideoButtonPresenter;
@@ -49,16 +37,9 @@ public class MainFragment extends BrowseFragment {
 
     private static final String TAG = "MainFragment";
 
-    private static final int BACKGROUND_UPDATE_DELAY = 300;
-    private static final int GRID_ITEM_WIDTH = 200;
-    private static final int GRID_ITEM_HEIGHT = 200;
-    private static final int NUM_ROWS = 6;
-    private static final int NUM_COLS = 15;
-
-    private final Handler mHandler = new Handler();
     private ArrayObjectAdapter mRowsAdapter;
-    private Timer mBackgroundTimer;
-
+    private boolean isSelectApp = false;
+    private ListRow headerListRow;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -66,10 +47,10 @@ public class MainFragment extends BrowseFragment {
         super.onActivityCreated(savedInstanceState);
         setHeadersState(BrowseFragment.HEADERS_DISABLED);
 
-//        loadData();
-//        loadRows();
-
         setupEventListeners();
+    }
+
+    public void refreshUI() {
     }
 
     @Override
@@ -96,16 +77,14 @@ public class MainFragment extends BrowseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (null != mBackgroundTimer) {
-            Log.d(TAG, "onDestroy: " + mBackgroundTimer.toString());
-            mBackgroundTimer.cancel();
-        }
     }
 
     private void loadData() {
         DataManager.getInstance(getActivity()).getPackageInfos();
-        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        setAdapter(mRowsAdapter);
+        if (mRowsAdapter == null) {
+            mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+            setAdapter(mRowsAdapter);
+        }
         loadHeaderRow();
         loadAllRows();
     }
@@ -118,7 +97,6 @@ public class MainFragment extends BrowseFragment {
     private void loadHeaderRow() {
         Log.e("MainFragment", "addRows--header");
         HeaderItem header = new HeaderItem(0, "Video");
-
         ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new VideoButtonPresenter());
         List<HashMap<String, Object>> headerData = new ArrayList<>();
         checkIqiyiAndLoad(headerData);
@@ -126,7 +104,8 @@ public class MainFragment extends BrowseFragment {
         checkYoukuAndLoad(headerData);
         if (headerData.size() > 0) {
             listRowAdapter.add(headerData);
-            mRowsAdapter.add(new ListRow(header, listRowAdapter));
+            headerListRow = new ListRow(header, listRowAdapter);
+            mRowsAdapter.add(headerListRow);
         }
         BackgroundUtil.init(getActivity());
 
@@ -184,67 +163,27 @@ public class MainFragment extends BrowseFragment {
         setOnItemViewSelectedListener(new OnItemViewSelectedListener() {
             @Override
             public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-                if (itemViewHolder == null)return;
-                if (itemViewHolder instanceof VideoButtonHolder) {
-                    VideoButtonHolder holder = (VideoButtonHolder) itemViewHolder;
-                } else {
+                if (itemViewHolder == null) return;
+                if (itemViewHolder instanceof AppButtonHolder) {
+                    if (rowViewHolder.getSelectedItem() == null) return;
                     AppInfoBean bean = (AppInfoBean) rowViewHolder.getSelectedItem();
-                    LogUtil.e("onItemSelected : " +  bean.getAppName());
+                    LogUtil.e("onItemSelected : " + bean.getAppName());
+                    isSelectApp = true;
+                } else {
+                    isSelectApp = false;
                 }
             }
         });
     }
 
+    public boolean isSelectApp() {
+        return isSelectApp;
+    }
 
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-            if (item instanceof Movie) {
-                Movie movie = (Movie) item;
-                Log.d(TAG, "Item: " + item.toString());
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra(DetailsActivity.MOVIE, movie);
-
-                Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
-                        ((ImageCardView) itemViewHolder.view).getMainImageView(),
-                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-                getActivity().startActivity(intent, bundle);
-            } else if (item instanceof String) {
-                if (((String) item).contains(getString(R.string.error_fragment))) {
-                    Intent intent = new Intent(getActivity(), BrowseErrorActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), ((String) item), Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        }
-    }
-
-    private class GridItemPresenter extends Presenter {
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent) {
-            TextView view = new TextView(parent.getContext());
-            view.setLayoutParams(new ViewGroup.LayoutParams(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT));
-            view.setFocusable(true);
-            view.setFocusableInTouchMode(true);
-            view.setBackgroundColor(getResources().getColor(R.color.default_background));
-            view.setTextColor(Color.WHITE);
-            view.setGravity(Gravity.CENTER);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-            AppInfoBean bean = (AppInfoBean) item;
-            ((TextView) viewHolder.view).setText(bean.getAppName());
-        }
-
-        @Override
-        public void onUnbindViewHolder(ViewHolder viewHolder) {
         }
     }
 

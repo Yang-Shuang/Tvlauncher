@@ -23,7 +23,6 @@ public class DataManager {
 
     private static DataManager manager;
     private Context mContext;
-    private List<AppInfoBean> mAppList;
     private HashMap<String, Drawable> imageMap;
 
     private DataManager(Context context) {
@@ -43,7 +42,7 @@ public class DataManager {
 
     public void getPackageInfos() {
         ArrayList<AppInfoBean> appList = new ArrayList<AppInfoBean>(); //用来存储获取的应用信息数据
-        appList.addAll(0,getTestData());
+//        appList.addAll(0, getTestData());
         List<PackageInfo> packages = mContext.getPackageManager().getInstalledPackages(0);
         imageMap = new HashMap<>();
         for (int i = 0; i < packages.size(); i++) {
@@ -57,7 +56,8 @@ public class DataManager {
             if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 tmpInfo.setCid(ClassifyUtil.getCategoryId(tmpInfo.getPackageName()));
             } else {
-                tmpInfo.setCid(105);
+                tmpInfo.setCid(AppUtil.getAppIntent(tmpInfo.getPackageName()) == null ? 106 : 105);
+                LogUtil.e("cid----" + tmpInfo.getCid());
             }
             imageMap.put(tmpInfo.getPackageName(), tmpInfo.getAppIcon());
             tmpInfo.setAppIcon(null);
@@ -71,6 +71,7 @@ public class DataManager {
         long time = System.currentTimeMillis();
         TVDataHelper helper = TVDataHelper.getIntance(mContext);
         SQLiteDatabase database = helper.getWritableDatabase();
+        database.delete("t_apps",null,null);
         int r = 0;
         for (AppInfoBean bean : beans) {
             ContentValues values = new ContentValues();
@@ -80,7 +81,7 @@ public class DataManager {
             values.put("cid", bean.getCid());
             int result = database.update("t_apps", values, "package=?", new String[]{bean.getPackageName()});
             if (result < 1) {
-                values.put("rid", getRid(bean.getPackageName()));
+                values.put("rid", getRid(bean.getCid()));
                 values.put("package", bean.getPackageName());
                 r += database.insert("t_apps", null, values);
             } else {
@@ -111,11 +112,50 @@ public class DataManager {
         return homeRowBeans;
     }
 
+    public List<AppInfoBean> getShortCutApp() {
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query("t_shortcuts", null, null, null, null, null, "position ASC", null);
+        List<AppInfoBean> beans = new ArrayList<>();
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                AppInfoBean bean = new AppInfoBean();
+                bean.setAppName(cursor.getString(cursor.getColumnIndex("name")));
+                bean.setPackageName(cursor.getString(cursor.getColumnIndex("package")));
+                bean.setAppIcon(imageMap.get(bean.getPackageName()));
+                beans.add(bean);
+            }
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return beans;
+    }
+
     public List<AppInfoBean> getRowApps(int rid, boolean same) {
         TVDataHelper helper = TVDataHelper.getIntance(mContext);
         SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
         Cursor cursor = sqLiteDatabase.query("t_apps", null, same ? "rid=?" : "rid!=?", new String[]{"" + rid}, null, null, "aid ASC", null);
         List<AppInfoBean> beans = new ArrayList<>();
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                AppInfoBean bean = new AppInfoBean();
+                bean.setAid(cursor.getInt(cursor.getColumnIndex("aid")));
+                bean.setAppName(cursor.getString(cursor.getColumnIndex("name")));
+                bean.setPackageName(cursor.getString(cursor.getColumnIndex("package")));
+                bean.setAppIcon(imageMap.get(bean.getPackageName()));
+                beans.add(bean);
+            }
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return beans;
+    }
+
+    public ArrayList<AppInfoBean> getAllApps() {
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query("t_apps", null, null, null, null, null, "aid ASC", null);
+        ArrayList<AppInfoBean> beans = new ArrayList<>();
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 AppInfoBean bean = new AppInfoBean();
@@ -151,8 +191,20 @@ public class DataManager {
         return bean;
     }
 
-    private int getRid(String packageName) {
-        int category = ClassifyUtil.getCategoryId(packageName);
+    public void saveShortCut(AppInfoBean bean, int position) {
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase database = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", bean.getAppName());
+        values.put("package", bean.getPackageName());
+        values.put("position", position);
+        int result = database.update("t_shortcuts", values, "package=?", new String[]{bean.getPackageName()});
+        if (result < 1) {
+            database.insert("t_shortcuts", null, values);
+        }
+    }
+
+    private int getRid(int category) {
         switch (category) {
             case 101:
             case 102:
@@ -163,10 +215,12 @@ public class DataManager {
                 return 3;
             case 105:
                 return 4;
+            case 106:
+                return 5;
             case 999:
-                return 5;
+                return 6;
             default:
-                return 5;
+                return 6;
         }
     }
 
@@ -227,7 +281,7 @@ public class DataManager {
         AppInfoBean f = new AppInfoBean();
         f.setAppIcon(drawable);
         f.setRid(2);
-        f.setCid(102);
+        f.setCid(103);
         f.setVersionCode(1);
         f.setVersionName("1");
         f.setAppName("HiFi音乐");

@@ -48,6 +48,58 @@
           ]
         },
         {
+          "name": "t_shortcuts",
+          "column": [
+            {
+              "name": "sid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },{
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
           "name": "t_category",
           "column": [
             {

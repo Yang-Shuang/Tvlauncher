@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:title="*^O^*">
+    <PreferenceScreen
+        android:key="prefs_app_info"
+        android:title="详细信息">
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:key="prefs_app_uninstall"
+        android:title="卸载">
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:key="prefs_launcher_settings"
+        android:title="桌面设置">
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:key="prefs_system_settings"
+        android:title="系统设置">
+    </PreferenceScreen>
+</PreferenceScreen>

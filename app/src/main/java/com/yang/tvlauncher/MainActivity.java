@@ -1,6 +1,7 @@
 package com.yang.tvlauncher;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,6 +33,7 @@ public class MainActivity extends Activity {
     private RelativeLayout timeLL;
     private TextView timeTv, dateTv;
     private Disposable subscription;
+    private MainFragment fragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class MainActivity extends Activity {
         timeLL = findViewById(R.id.main_time_ll);
         timeTv = findViewById(R.id.main_time_tv);
         dateTv = findViewById(R.id.main_date_tv);
+        fragment = (MainFragment) getFragmentManager().findFragmentById(R.id.main_browse_fragment);
 
         subscription = Observable.interval(0, 1, TimeUnit.SECONDS)
                 .map(new Function<Long, Long>() {
@@ -80,6 +83,12 @@ public class MainActivity extends Activity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        fragment.refreshUI();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     @Override
@@ -95,10 +104,25 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return super.onKeyDown(keyCode, event);
+
 //        KeyEvent.KEYCODE_INFO 165
 //        KeyEvent.KEYCODE_HOME 3
 //        KeyEvent.KEYCODE_MENU 82
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+                int type = fragment.isSelectApp() ? MenuFragment.ALL : MenuFragment.ONLY_SETTINGS;
+                Intent intent = new Intent(this,
+                        MenuActivity.class);
+                intent.putExtra(MenuFragment.MENU_TYPE,type);
+                startActivity(intent);
+                break;
+            case KeyEvent.KEYCODE_INFO:
+                Intent i = new Intent(this,
+                        HomeActivity.class);
+                startActivity(i);
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     //    @Override
