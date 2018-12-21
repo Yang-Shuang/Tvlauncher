@@ -14,10 +14,10 @@ import android.support.v17.leanback.widget.RowPresenter;
 import android.view.View;
 
 import com.yang.tvlauncher.presenter.AppButtonPresenter;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
-import com.yang.tvlauncher.utils.HomeRowBean;
+import com.yang.tvlauncher.bean.HomeRowBean;
 
 import java.util.List;
 

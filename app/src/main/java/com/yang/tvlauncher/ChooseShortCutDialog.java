@@ -15,13 +15,10 @@ import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.yang.tvlauncher.presenter.DialogListAdapter;
-import com.yang.tvlauncher.utils.AppInfoBean;
-import com.yang.tvlauncher.utils.LogUtil;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.ScreenUtil;
-import com.yang.tvlauncher.utils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by

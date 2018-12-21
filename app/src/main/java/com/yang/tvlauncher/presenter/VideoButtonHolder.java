@@ -45,7 +45,7 @@ import static com.youth.banner.BannerConfig.NOT_INDICATOR;
 
 public class VideoButtonHolder extends Presenter.ViewHolder {
 
-    public static final String IQIYI = "com.gitvdemo.video";
+    public static final String IQIYI = "com.gitvvideo.huanqiuzhidacpa";
     public static final String YUNSHITING = "com.ktcp.video";
     public static final String KUMIAO = "com.cibn.tv";
 

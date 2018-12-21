@@ -6,10 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yang.tvlauncher.R;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by yangshuang

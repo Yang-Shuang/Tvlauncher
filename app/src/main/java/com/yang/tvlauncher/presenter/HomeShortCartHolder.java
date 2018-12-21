@@ -1,17 +1,14 @@
 package com.yang.tvlauncher.presenter;
 
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yang.tvlauncher.R;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
-
-import java.util.Map;
 
 /**
  * Created by yangshuang

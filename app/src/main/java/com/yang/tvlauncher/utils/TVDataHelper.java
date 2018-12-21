@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.yang.tvlauncher.BuildConfig;
+import com.yang.tvlauncher.bean.CategoryBean;
+import com.yang.tvlauncher.bean.DBInfoBean;
+import com.yang.tvlauncher.bean.HomeRowBean;
 
 import java.io.IOException;
 import java.io.InputStream;

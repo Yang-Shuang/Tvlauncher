@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'yang'
+            keyPassword '123456'
+            storeFile file('G:/WorkSpace/As/Tvlauncher/yang.jks')
+            storePassword '123456'
+        }
+    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.yang.tvlauncher"
@@ -11,8 +19,16 @@ android {
         buildConfigField("int", "DB_VERSION", db_version)
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
-            debuggable false
+            debuggable true
             minifyEnabled true
             zipAlignEnabled true
             shrinkResources true
@@ -25,7 +41,6 @@ android {
             dirs 'libs'
         }
     }
-
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
@@ -34,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:leanback-v17:26.1.0'
     implementation 'com.android.support:preference-v7:26.1.0'
     implementation 'com.android.support:preference-leanback-v17:26.1.0'
@@ -49,7 +64,7 @@ dependencies {
     implementation 'com.android.support:support-compat:26.1.0'
     implementation 'com.daimajia.easing:library:2.0@aar'
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
-    implementation "io.reactivex.rxjava2:rxjava:2.2.4"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'com.orhanobut:dialogplus:1.11@aar'
 }

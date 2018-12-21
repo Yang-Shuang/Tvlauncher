@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
@@ -18,19 +16,17 @@ import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.yang.tvlauncher.presenter.AppButtonHolder;
 import com.yang.tvlauncher.presenter.AppButtonPresenter;
 import com.yang.tvlauncher.presenter.VideoButtonHolder;
 import com.yang.tvlauncher.presenter.VideoButtonPresenter;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.BackgroundUtil;
 import com.yang.tvlauncher.utils.DataManager;
-import com.yang.tvlauncher.utils.HomeRowBean;
+import com.yang.tvlauncher.bean.HomeRowBean;
 import com.yang.tvlauncher.utils.LogUtil;
 
 public class MainFragment extends BrowseFragment {

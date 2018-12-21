@@ -1,19 +1,14 @@
 package com.yang.tvlauncher.presenter;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orhanobut.dialogplus.ViewHolder;
 import com.yang.tvlauncher.R;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.ScreenUtil;
 
 /**

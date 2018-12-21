@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 
 import com.yang.tvlauncher.R;
+import com.yang.tvlauncher.bean.AppInfoBean;
+import com.yang.tvlauncher.bean.HomeRowBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ public class DataManager {
             AppInfoBean tmpInfo = new AppInfoBean();
             tmpInfo.setAppName(packageInfo.applicationInfo.loadLabel(mContext.getPackageManager()).toString());
             tmpInfo.setPackageName(packageInfo.packageName);
+            LogUtil.e("package---" + packageInfo.packageName);
             tmpInfo.setVersionName(packageInfo.versionName);
             tmpInfo.setVersionCode(packageInfo.versionCode);
             tmpInfo.setAppIcon(packageInfo.applicationInfo.loadIcon(mContext.getPackageManager()));
@@ -70,7 +73,10 @@ public class DataManager {
         long time = System.currentTimeMillis();
         TVDataHelper helper = TVDataHelper.getIntance(mContext);
         SQLiteDatabase database = helper.getWritableDatabase();
-        database.delete("t_apps",null,null);
+        try {
+            database.delete("t_apps", null, null);
+        } catch (Exception e) {
+        }
         int r = 0;
         for (AppInfoBean bean : beans) {
             ContentValues values = new ContentValues();

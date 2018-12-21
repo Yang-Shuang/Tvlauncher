@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.yang.tvlauncher.presenter.HomeShortCartHolder;
 import com.yang.tvlauncher.presenter.HomeVideoButtonHolder;
 import com.yang.tvlauncher.presenter.VideoButtonHolder;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
 import com.yang.tvlauncher.utils.ScreenUtil;
@@ -359,5 +359,10 @@ public class HomeActivity extends Activity {
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

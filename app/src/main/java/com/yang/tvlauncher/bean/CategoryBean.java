@@ -1,4 +1,4 @@
-package com.yang.tvlauncher.utils;
+package com.yang.tvlauncher.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

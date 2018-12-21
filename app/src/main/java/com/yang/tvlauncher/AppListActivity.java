@@ -11,14 +11,14 @@ import android.view.View;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnClickListener;
-import com.orhanobut.dialogplus.ViewHolder;
 import com.yang.tvlauncher.presenter.DialogAppInfoViewHolder;
-import com.yang.tvlauncher.utils.AppInfoBean;
+import com.yang.tvlauncher.bean.AppInfoBean;
 
 public class AppListActivity extends Activity {
 
     AppListFragment fragment;
     DialogAppInfoViewHolder holder;
+    DialogPlus p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +35,7 @@ public class AppListActivity extends Activity {
             case KeyEvent.KEYCODE_MENU:
                 final AppInfoBean bean = (AppInfoBean) fragment.getSelectedRowViewHolder().getSelectedItem();
                 holder.setData(bean);
-                DialogPlus p = DialogPlus.newDialog(this)
+                p = DialogPlus.newDialog(this)
                         .setBackgroundColorResId(Color.TRANSPARENT)
                         .setContentHolder(holder)
                         .setCancelable(true)
@@ -59,5 +59,14 @@ public class AppListActivity extends Activity {
                 break;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(p !=null && p.isShowing()){
+            p.dismiss();
+        } else {
+            finish();
+        }
     }
 }

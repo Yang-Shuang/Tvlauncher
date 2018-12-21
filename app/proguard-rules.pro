@@ -36,6 +36,7 @@
     public <init>(android.content.Context, android.util.AttributeSet, int);
     public <init>(android.content.Context, android.util.AttributeSet, int, int);
 }
+-keep class com.yang.tvlauncher.bean.** { *;}
 
 -keep class com.youth.banner.**
 

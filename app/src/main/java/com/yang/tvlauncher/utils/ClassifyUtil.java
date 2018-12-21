@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class ClassifyUtil {
 
     private static final HashMap<String, Integer> referenceMap = new HashMap<String, Integer>() {{
+        put("com.gitvvideo.huanqiuzhidacpa", 101); //银河奇异果
         put("com.gitvdemo.video", 101); //银河奇异果
         put("com.ktcp.video", 101); //云视听极光
         put("com.cibn.tv", 101); //CIBN酷喵影视
