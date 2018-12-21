@@ -57,7 +57,6 @@ public class DataManager {
                 tmpInfo.setCid(ClassifyUtil.getCategoryId(tmpInfo.getPackageName()));
             } else {
                 tmpInfo.setCid(AppUtil.getAppIntent(tmpInfo.getPackageName()) == null ? 106 : 105);
-                LogUtil.e("cid----" + tmpInfo.getCid());
             }
             imageMap.put(tmpInfo.getPackageName(), tmpInfo.getAppIcon());
             tmpInfo.setAppIcon(null);

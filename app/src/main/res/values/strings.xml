@@ -27,6 +27,7 @@
 
     <item name="viewHolder" type="id" />
     <item name="viewData" type="id" />
+    <item name="hasZoom" type="id" />
 
 
 </resources>

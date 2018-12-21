@@ -10,14 +10,13 @@ import android.widget.LinearLayout;
 
 import com.daimajia.androidanimations.library.BaseViewAnimator;
 import com.daimajia.androidanimations.library.YoYo;
-import com.yang.tvlauncher.utils.LogUtil;
-
+import com.yang.tvlauncher.R;
 /**
  * Created by yangshuang
  * on 2018/12/17.
  */
 
-public class FoucsLinearLayout extends LinearLayout{
+public class FoucsLinearLayout extends LinearLayout {
     public FoucsLinearLayout(Context context) {
         super(context);
     }
@@ -36,7 +35,7 @@ public class FoucsLinearLayout extends LinearLayout{
 
     }
 
-    private void init(){
+    private void init() {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
@@ -60,7 +59,8 @@ public class FoucsLinearLayout extends LinearLayout{
         child.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
+                boolean hasZoom = v.getTag(R.id.hasZoom) != null && (boolean) v.getTag(R.id.hasZoom);
+                if (hasFocus && !hasZoom) {
                     YoYo.with(new BaseViewAnimator() {
                         @Override
                         protected void prepare(View target) {
@@ -70,7 +70,8 @@ public class FoucsLinearLayout extends LinearLayout{
                             );
                         }
                     }).duration(100).repeat(0).playOn(v);
-                } else {
+                    v.setTag(R.id.hasZoom, true);
+                } else if (!hasFocus && hasZoom) {
                     YoYo.with(new BaseViewAnimator() {
                         @Override
                         protected void prepare(View target) {
@@ -80,6 +81,7 @@ public class FoucsLinearLayout extends LinearLayout{
                             );
                         }
                     }).duration(100).repeat(0).playOn(v);
+                    v.setTag(R.id.hasZoom, false);
                 }
             }
         });

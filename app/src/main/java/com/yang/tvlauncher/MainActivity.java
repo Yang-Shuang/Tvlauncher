@@ -4,17 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.TimeUtil;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.concurrent.TimeUnit;
 
@@ -62,15 +56,6 @@ public class MainActivity extends Activity {
                 });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(Object headerHasFocus) {
-        final boolean hasFocus = (boolean) headerHasFocus;
-        timeLL.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
-    }
-
-
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -82,7 +67,6 @@ public class MainActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
         fragment.refreshUI();
     }
 
@@ -94,7 +78,6 @@ public class MainActivity extends Activity {
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override

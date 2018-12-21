@@ -89,13 +89,14 @@ public class HomeActivity extends Activity {
         dateTv = findViewById(R.id.main_date_tv);
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mParent.getLayoutParams();
-        params.height = (int) ((ScreenUtil.screen_height - ScreenUtil.dp2px(80)) / 3f * 2);
+        params.height = (int) ((ScreenUtil.screen_height - ScreenUtil.dp2px(110)) / 3f * 2);
 
         imageHeight = params.height / 2;
         mParent.setLayoutParams(params);
         mParent.setPadding(ScreenUtil.dp2px(20), 0, ScreenUtil.dp2px(20), 0);
         mParent.setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
 
+        mShortCutParent.setPadding(ScreenUtil.dp2px(20), 0, ScreenUtil.dp2px(20), 0);
     }
 
     private void initClock() {
@@ -136,6 +137,9 @@ public class HomeActivity extends Activity {
             } else {
                 parent = LayoutInflater.from(this).inflate(R.layout.home_shortcut_item, null);
                 holder = new HomeShortCartHolder(parent);
+                if (i == 8){
+                    ((LinearLayout.LayoutParams) parent.getLayoutParams()).rightMargin = ScreenUtil.dp2px(25);
+                }
                 parent.setTag(R.id.viewHolder, holder);
                 mShortCutParent.addView(parent);
             }
@@ -315,13 +319,14 @@ public class HomeActivity extends Activity {
             mParent.addView(notInstallView("没有安装酷喵"));
         }
     }
-    private View notInstallView(String message){
+
+    private View notInstallView(String message) {
         TextView textView = new TextView(this);
         textView.setBackgroundColor(getColor(R.color.trans_default_background));
         textView.setTextColor(Color.WHITE);
         textView.setGravity(Gravity.CENTER);
         textView.setText(message);
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams((int)(imageHeight/3f * 5),(int)(imageHeight/3f * 5));
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams((int) (imageHeight / 3f * 5), (int) (imageHeight / 3f * 5));
         p.rightMargin = ScreenUtil.dp2px(25);
         textView.setLayoutParams(p);
         return textView;

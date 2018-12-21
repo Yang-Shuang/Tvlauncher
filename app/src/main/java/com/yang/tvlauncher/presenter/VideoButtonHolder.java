@@ -30,8 +30,6 @@ import com.yang.tvlauncher.utils.ImageManager;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.youth.banner.Banner;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +100,6 @@ public class VideoButtonHolder extends Presenter.ViewHolder {
         layout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                EventBus.getDefault().post(mParent.findFocus() != null);
                 if (hasFocus) {
                     YoYo.with(new BaseViewAnimator() {
                         @Override
