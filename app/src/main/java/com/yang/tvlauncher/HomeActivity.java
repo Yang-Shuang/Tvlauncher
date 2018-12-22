@@ -60,12 +60,13 @@ public class HomeActivity extends Activity {
         initView();
         initEventListener();
         initClock();
-        loadVideoButton();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        loadVideoButton();
         loadShortCut();
     }
 
@@ -119,7 +120,7 @@ public class HomeActivity extends Activity {
     }
 
     private void loadVideoButton() {
-        mParent.removeAllViews();
+//        mParent.removeAllViews();
         checkIqiyiAndLoad();
         checkTencentAndLoad();
         checkYoukuAndLoad();
@@ -137,7 +138,7 @@ public class HomeActivity extends Activity {
             } else {
                 parent = LayoutInflater.from(this).inflate(R.layout.home_shortcut_item, null);
                 holder = new HomeShortCartHolder(parent);
-                if (i == 8){
+                if (i == 8) {
                     ((LinearLayout.LayoutParams) parent.getLayoutParams()).rightMargin = ScreenUtil.dp2px(25);
                 }
                 parent.setTag(R.id.viewHolder, holder);
@@ -250,10 +251,25 @@ public class HomeActivity extends Activity {
             iqiyiData.put("name", bean.getAppName());
             iqiyiData.put("package", VideoButtonHolder.IQIYI);
             iqiyiData.put("icon", bean.getAppIcon());
-            View parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            HomeVideoButtonHolder holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-            holder.setData(iqiyiData);
+            View parent = null;
+            HomeVideoButtonHolder holder = null;
+            if (mParent.getChildCount() == 0){
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else if(mParent.getChildAt(0) instanceof TextView){
+                mParent.removeViewAt(0);
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else {
+                parent = mParent.getChildAt(0);
+                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
+            }
             parent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -263,7 +279,7 @@ public class HomeActivity extends Activity {
                     }
                 }
             });
-            mParent.addView(parent);
+            holder.setData(iqiyiData);
         } else {
             mParent.addView(notInstallView("没有安装奇异果"));
         }
@@ -276,8 +292,25 @@ public class HomeActivity extends Activity {
             data.put("name", bean.getAppName());
             data.put("package", VideoButtonHolder.YUNSHITING);
             data.put("icon", bean.getAppIcon());
-            View parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            HomeVideoButtonHolder holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+            View parent = null;
+            HomeVideoButtonHolder holder = null;
+            if (mParent.getChildAt(1) == null){
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else if(mParent.getChildAt(1) instanceof TextView){
+                mParent.removeViewAt(1);
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else {
+                parent = mParent.getChildAt(1);
+                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
+            }
             holder.setData(data);
             parent.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -288,7 +321,6 @@ public class HomeActivity extends Activity {
                     }
                 }
             });
-            mParent.addView(parent);
         } else {
             mParent.addView(notInstallView("没有安装云视听极光"));
         }
@@ -301,9 +333,25 @@ public class HomeActivity extends Activity {
             data.put("name", bean.getAppName());
             data.put("package", VideoButtonHolder.KUMIAO);
             data.put("icon", bean.getAppIcon());
-            View parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            HomeVideoButtonHolder holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-            ((LinearLayout.LayoutParams) parent.getLayoutParams()).rightMargin = ScreenUtil.dp2px(25);
+            View parent = null;
+            HomeVideoButtonHolder holder = null;
+            if (mParent.getChildAt(2) == null){
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else if(mParent.getChildAt(2) instanceof TextView){
+                mParent.removeViewAt(2);
+                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+                parent.setTag(R.id.viewHolder,holder);
+                mParent.addView(parent);
+            } else {
+                parent = mParent.getChildAt(2);
+                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
+            }
             holder.setData(data);
             parent.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -314,7 +362,6 @@ public class HomeActivity extends Activity {
                     }
                 }
             });
-            mParent.addView(parent);
         } else {
             mParent.addView(notInstallView("没有安装酷喵"));
         }

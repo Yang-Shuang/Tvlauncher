@@ -53,12 +53,13 @@ public class HomeVideoButtonHolder {
     private Banner banner;
     private RelativeLayout descLayout;
     private Context mContext;
+    private boolean hasStart = false;
 
 
     public HomeVideoButtonHolder(View view, Context context, int imageHeight) {
         this.mContext = context;
         this.imageHeight = imageHeight;
-        this.imageWidth = this.imageHeight /3f * 5;
+        this.imageWidth = this.imageHeight / 3f * 5;
 
         icon = view.findViewById(R.id.item_icon);
         desc = view.findViewById(R.id.item_desc);
@@ -86,7 +87,12 @@ public class HomeVideoButtonHolder {
         banner.setFocusableInTouchMode(false);
     }
 
+    public boolean isHasStart() {
+        return hasStart;
+    }
+
     public void setData(HashMap<String, Object> map) {
+        if (hasStart) return;
         this.map = map;
         icon.setImageDrawable((Drawable) map.get("icon"));
         title.setText(map.get("name").toString());
@@ -113,6 +119,10 @@ public class HomeVideoButtonHolder {
                             banner.setImageLoader(new ImageManager.GlideImageLoader());
                             banner.setImages(imageUrls);
                             banner.start();
+                            View viewpager = banner.findViewById(R.id.bannerViewPager);
+                            viewpager.setFocusable(false);
+                            viewpager.setFocusableInTouchMode(false);
+                            hasStart = true;
                             banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                                 @Override
                                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
