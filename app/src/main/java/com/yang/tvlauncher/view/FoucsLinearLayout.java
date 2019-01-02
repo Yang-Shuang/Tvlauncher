@@ -2,6 +2,7 @@ package com.yang.tvlauncher.view;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -11,12 +12,18 @@ import android.widget.LinearLayout;
 import com.daimajia.androidanimations.library.BaseViewAnimator;
 import com.daimajia.androidanimations.library.YoYo;
 import com.yang.tvlauncher.R;
+import com.yang.tvlauncher.utils.LogUtil;
+
 /**
  * Created by yangshuang
  * on 2018/12/17.
  */
 
 public class FoucsLinearLayout extends LinearLayout {
+    private int highLightType;
+    private static final int ZOOM = 0;
+    private static final int BACKGROUND = 1;
+
     public FoucsLinearLayout(Context context) {
         super(context);
     }
@@ -24,6 +31,10 @@ public class FoucsLinearLayout extends LinearLayout {
     public FoucsLinearLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         this.init();
+        TypedArray a = getContext().obtainStyledAttributes(
+                attrs, R.styleable.FoucsLinearLayout, 0, 0);
+        highLightType = a.getInt(R.styleable.FoucsLinearLayout_highLightType, ZOOM);
+        a.recycle();
     }
 
     public FoucsLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -36,6 +47,8 @@ public class FoucsLinearLayout extends LinearLayout {
     }
 
     private void init() {
+        setClipChildren(false);
+        setClipToPadding(false);
         setFocusable(true);
         setFocusableInTouchMode(true);
         setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
@@ -59,31 +72,36 @@ public class FoucsLinearLayout extends LinearLayout {
         child.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                boolean hasZoom = v.getTag(R.id.hasZoom) != null && (boolean) v.getTag(R.id.hasZoom);
-                if (hasFocus && !hasZoom) {
-                    YoYo.with(new BaseViewAnimator() {
-                        @Override
-                        protected void prepare(View target) {
-                            getAnimatorAgent().playTogether(
-                                    ObjectAnimator.ofFloat(target, "scaleX", 1f, 1.15f),
-                                    ObjectAnimator.ofFloat(target, "scaleY", 1f, 1.15f)
-                            );
-                        }
-                    }).duration(100).repeat(0).playOn(v);
-                    v.setTag(R.id.hasZoom, true);
-                } else if (!hasFocus && hasZoom) {
-                    YoYo.with(new BaseViewAnimator() {
-                        @Override
-                        protected void prepare(View target) {
-                            getAnimatorAgent().playTogether(
-                                    ObjectAnimator.ofFloat(target, "scaleX", 1.15f, 1f),
-                                    ObjectAnimator.ofFloat(target, "scaleY", 1.15f, 1f)
-                            );
-                        }
-                    }).duration(100).repeat(0).playOn(v);
-                    v.setTag(R.id.hasZoom, false);
+                boolean hasZoom = v.getTag(R.id.hasHighLight) != null && (boolean) v.getTag(R.id.hasHighLight);
+                if (highLightType == ZOOM) {
+                    if ((hasFocus && !hasZoom) || (!hasFocus && hasZoom)) {
+                        zoom(hasFocus, v);
+                    }
+                } else if (highLightType == BACKGROUND) {
+                    changeBack(hasFocus, v);
                 }
             }
         });
+    }
+
+    private void zoom(boolean hasFocus, View v) {
+        final float startX = hasFocus ? 1f : 1.15f;
+        final float endX = hasFocus ? 1.15f : 1f;
+        final float startY = hasFocus ? 1f : 1.15f;
+        final float endY = hasFocus ? 1.15f : 1f;
+        YoYo.with(new BaseViewAnimator() {
+            @Override
+            protected void prepare(View target) {
+                getAnimatorAgent().playTogether(
+                        ObjectAnimator.ofFloat(target, "scaleX", startX, endX),
+                        ObjectAnimator.ofFloat(target, "scaleY", startY, endY)
+                );
+            }
+        }).duration(100).repeat(0).playOn(v);
+        v.setTag(R.id.hasHighLight, hasFocus);
+    }
+
+    private void changeBack(boolean hasFocus, View v) {
+        v.setBackgroundResource(hasFocus ? R.color.trans_default_background : R.color.transparent);
     }
 }

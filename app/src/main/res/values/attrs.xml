@@ -9,4 +9,12 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="FoucsLinearLayout">
+        <attr name="highLightType">
+            <enum name="none" value="0" />
+            <enum name="zoom" value="0" />
+            <enum name="background" value="1" />
+        </attr>
+    </declare-styleable>
+
 </resources>

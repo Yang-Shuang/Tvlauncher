@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 
 import com.yang.tvlauncher.R;
 import com.yang.tvlauncher.bean.AppInfoBean;
+import com.yang.tvlauncher.utils.LogUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yangshuang
@@ -17,10 +19,11 @@ import java.util.ArrayList;
 
 public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder> {
 
-    private ArrayList<AppInfoBean> mData;
+    private List<AppInfoBean> mData;
     private OnItemClickListener listener;
 
-    public DialogListAdapter(ArrayList<AppInfoBean> mData) {
+    public DialogListAdapter(List<AppInfoBean> mData) {
+        LogUtil.e("DialogListAdapter----" + mData.size());
         this.mData = mData;
     }
 
@@ -30,7 +33,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
 
     @Override
     public DialogListItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_button,null);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_button, null);
 
         return new DialogListItemHolder(view);
     }
@@ -43,8 +46,8 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener != null) {
-                    listener.onItemClick(position,bean);
+                if (listener != null) {
+                    listener.onItemClick(position, bean);
                 }
             }
         });
@@ -55,7 +58,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
         return mData.size();
     }
 
-    public interface OnItemClickListener{
-        void onItemClick(int position,Object data);
+    public interface OnItemClickListener {
+        void onItemClick(int position, Object data);
     }
 }

@@ -48,9 +48,10 @@ public class DialogListItemHolder extends RecyclerView.ViewHolder{
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    v.setBackgroundColor(v.getContext().getResources().getColor(R.color.selected_background));
+                    v.setBackgroundResource(R.drawable.bg_selected);
                 } else {
-                    v.setBackgroundColor(v.getContext().getResources().getColor(R.color.default_background));
+                    v.setBackgroundResource(R.color.default_background);
+
                 }
             }
         });

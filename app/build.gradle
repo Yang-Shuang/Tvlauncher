@@ -1,14 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        config {
-            keyAlias 'yang'
-            keyPassword '123456'
-            storeFile file('G:/WorkSpace/As/Tvlauncher/yang.jks')
-            storePassword '123456'
-        }
-    }
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.yang.tvlauncher"
@@ -18,13 +10,21 @@ android {
         versionName VERSION_NAME
         buildConfigField("int", "DB_VERSION", db_version)
     }
+    signingConfigs {
+        release {
+            keyAlias 'yang'
+            keyPassword '123456'
+            storeFile file('yang.jks')
+            storePassword '123456'
+        }
+    }
     buildTypes {
         debug {
             debuggable true
             minifyEnabled true
             zipAlignEnabled true
             shrinkResources true
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
@@ -32,7 +32,7 @@ android {
             minifyEnabled true
             zipAlignEnabled true
             shrinkResources true
-            signingConfig null
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -67,4 +67,5 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'com.orhanobut:dialogplus:1.11@aar'
+    implementation (name: 'ViewPagerIndicator-2.4.1', ext: 'aar')
 }

@@ -1,21 +1,23 @@
 package com.yang.tvlauncher;
 
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-import com.yang.tvlauncher.presenter.DialogListAdapter;
+import com.viewpagerindicator.CirclePageIndicator;
+import com.yang.tvlauncher.presenter.AppListPageAdapter;
 import com.yang.tvlauncher.bean.AppInfoBean;
+import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 
 import java.util.ArrayList;
@@ -27,9 +29,13 @@ import java.util.ArrayList;
 
 public class ChooseShortCutDialog extends DialogFragment {
 
-    private RecyclerView recyclerView;
+
+    private ViewPager pager;
+    private CirclePageIndicator indicator;
     private ArrayList<AppInfoBean> beans;
     private onSelectedAppListener onSelectedAppListener;
+    private int currentPageIndex = 0;
+    private AppListPageAdapter adapter;
 
     public void setOnSelectedAppListener(ChooseShortCutDialog.onSelectedAppListener onSelectedAppListener) {
         this.onSelectedAppListener = onSelectedAppListener;
@@ -38,15 +44,13 @@ public class ChooseShortCutDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-//        return super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.dialog_choose_shortcut, container);
-        recyclerView = view.findViewById(R.id.dialog_rv);
-        recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), 6));
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) recyclerView.getLayoutParams();
+        View view = inflater.inflate(R.layout.dialog_app_list_layout, container);
+        pager = view.findViewById(R.id.dialog_apps_pager);
+        indicator = view.findViewById(R.id.dialog_apps_indicator);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) pager.getLayoutParams();
         params.width = (int) (ScreenUtil.screen_width / 10f * 7);
-        params.height = (int) (ScreenUtil.screen_width / 10f * 4);
-        recyclerView.setLayoutParams(params);
-        recyclerView.setPadding(ScreenUtil.screen_width / 20, 0, ScreenUtil.screen_width / 20, 0);
+        params.height = (int) (ScreenUtil.screen_width / 3f);
+        pager.setLayoutParams(params);
         return view;
     }
 
@@ -55,22 +59,52 @@ public class ChooseShortCutDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        DialogListAdapter adapter = new DialogListAdapter(beans);
-        adapter.setListener(new DialogListAdapter.OnItemClickListener() {
+        adapter = new AppListPageAdapter(beans);
+        adapter.setOnItemSelectedListener(new AppListPageAdapter.onItemSelectedListener() {
             @Override
-            public void onItemClick(int position, Object data) {
+            public void onSelectedApp(AppInfoBean bean) {
                 dismiss();
-                AppInfoBean bean = (AppInfoBean) data;
                 if (onSelectedAppListener != null) {
                     onSelectedAppListener.onSelectedApp(bean);
                 }
             }
         });
-        recyclerView.setAdapter(adapter);
-    }
+        pager.setAdapter(adapter);
+        indicator.setViewPager(pager);
+        currentPageIndex = 0;
 
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                adapter.onPageChange(position);
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
     public void setData(ArrayList<AppInfoBean> beans) {
         this.beans = beans;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pager != null && pager.getAdapter() != null) {
+            pager.setCurrentItem(currentPageIndex);
+        }
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        pager.clearOnPageChangeListeners();
+        pager.setAdapter(null);
+        adapter = null;
     }
 
     public void show(FragmentManager manager) {
