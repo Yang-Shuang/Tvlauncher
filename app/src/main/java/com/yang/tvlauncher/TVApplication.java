@@ -6,6 +6,7 @@ import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.ImageManager;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.ToastUtil;
+import com.yang.tvlauncher.utils.TvExceptionHandler;
 
 /**
  * Created by
@@ -20,7 +21,9 @@ public class TVApplication extends Application {
 
         ScreenUtil.init(this);
         ToastUtil.init(this);
+        TvExceptionHandler.init(this);
         ImageManager.init();
         AppUtil.init(this);
+
     }
 }

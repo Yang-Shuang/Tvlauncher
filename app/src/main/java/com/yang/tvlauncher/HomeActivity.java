@@ -21,6 +21,7 @@ import com.yang.tvlauncher.presenter.VideoButtonHolder;
 import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
+import com.yang.tvlauncher.utils.FileIOUtils;
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
@@ -40,6 +41,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS;
+import static com.yang.tvlauncher.utils.TvExceptionHandler.LOG_FILE_PATH;
 
 public class HomeActivity extends Activity {
 
@@ -101,7 +103,7 @@ public class HomeActivity extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && isFist) {
             isFist = false;
-            mParent.getChildAt(0).requestFocus();
+//            mParent.getChildAt(0).requestFocus();
         }
         LogUtil.e("onWindowFocusChanged----------" + hasFocus);
     }
@@ -160,6 +162,11 @@ public class HomeActivity extends Activity {
             case R.id.home_clear_ll:
                 break;
             case R.id.home_set_ll:
+//                startActivity(new Intent(this,LogActivity.class));
+                String log = FileIOUtils.readFile2String(LOG_FILE_PATH);
+                LogUtil.e("**********************************************************************************");
+                LogUtil.e(log);
+                LogUtil.e("**********************************************************************************");
                 break;
         }
     }
