@@ -23,7 +23,6 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
     private OnItemClickListener listener;
 
     public DialogListAdapter(List<AppInfoBean> mData) {
-        LogUtil.e("DialogListAdapter----" + mData.size());
         this.mData = mData;
     }
 

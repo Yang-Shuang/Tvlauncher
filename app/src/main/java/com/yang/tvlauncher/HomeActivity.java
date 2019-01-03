@@ -1,14 +1,11 @@
 package com.yang.tvlauncher;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -28,8 +25,8 @@ import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
 import com.yang.tvlauncher.utils.TimeUtil;
-import com.yang.tvlauncher.utils.ToastUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,14 +43,21 @@ import static android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS;
 
 public class HomeActivity extends Activity {
 
+    private static class MyHandler extends Handler {
+        WeakReference<HomeActivity> mReference;
 
-    private static class MyBroadcastReceiver extends BroadcastReceiver {
+        public MyHandler(HomeActivity activity) {
+            mReference = new WeakReference<HomeActivity>(activity);
+        }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Intent i = new Intent(context, HomeActivity.class);
-            i.putExtra("ConnectReceiver", true);
-            context.startActivity(i);
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (AppUtil.isNetworkAvailable(mReference.get())) {
+                mReference.get().loadVideoButton();
+            } else {
+                sendEmptyMessageDelayed(101, 1000);
+            }
         }
     }
 
@@ -63,12 +67,13 @@ public class HomeActivity extends Activity {
     private LinearLayout mParent;
     private LinearLayout mShortCutParent;
     private ChooseShortCutDialog dialog;
-    private BroadcastReceiver mReceiver;
 
     private OnShortCutsClickListener onShortCutsClickListener;
     private int clickPosition;
     private boolean isFist = true;
     private AllAppsDialog mAllAppsDialog;
+    private MyHandler mHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +82,18 @@ public class HomeActivity extends Activity {
         DataManager.getInstance(HomeActivity.this).initDataBases();
         DataManager.getInstance(HomeActivity.this).getPackageInfos();
 
-        mReceiver = new MyBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        filter.addAction("android.net.wifi.STATE_CHANGE");
-        registerReceiver(mReceiver, filter);
-
         initView();
         initEventListener();
         initClock();
+
+        mHandler = new MyHandler(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadVideoButton();
+        mHandler.sendEmptyMessage(101);
         loadShortCut();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (intent.getBooleanExtra("ConnectReceiver", false)) {
-            loadVideoButton();
-        }
     }
 
     @Override
@@ -111,6 +103,7 @@ public class HomeActivity extends Activity {
             isFist = false;
             mParent.getChildAt(0).requestFocus();
         }
+        LogUtil.e("onWindowFocusChanged----------" + hasFocus);
     }
 
     @Override
@@ -118,9 +111,6 @@ public class HomeActivity extends Activity {
         super.onDestroy();
         if (!subscription.isDisposed()) {
             subscription.dispose();
-        }
-        if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
         }
     }
 
@@ -174,14 +164,15 @@ public class HomeActivity extends Activity {
         }
     }
 
-    private void loadVideoButton() {
+    public void loadVideoButton() {
+        LogUtil.e("---------开始加载Banner---------");
         checkIqiyiAndLoad();
         checkTencentAndLoad();
         checkYoukuAndLoad();
     }
 
     private void loadShortCut() {
-
+        LogUtil.e("---------开始加载快捷方式---------");
         List<AppInfoBean> mdata = DataManager.getInstance(this).getShortCutApp();
         for (int i = 0; i < 9; i++) {
             HomeShortCartHolder holder = null;
@@ -462,4 +453,6 @@ public class HomeActivity extends Activity {
     public void onBackPressed() {
 
     }
+
+
 }

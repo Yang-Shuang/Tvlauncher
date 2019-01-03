@@ -3,6 +3,8 @@ package com.yang.tvlauncher.utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 /**
  * Created by
@@ -25,5 +27,19 @@ public class AppUtil {
             intent = packageManager.getLeanbackLaunchIntentForPackage(packageName);
         }
         return intent;
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        try {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info != null && info.isAvailable() && info.isConnected()) {
+                return true;
+            }
+        } catch (Exception var3) {
+            LogUtil.e(var3.getMessage());
+        }
+
+        return false;
     }
 }
