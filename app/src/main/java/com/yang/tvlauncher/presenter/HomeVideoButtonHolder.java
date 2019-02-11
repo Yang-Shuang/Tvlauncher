@@ -85,6 +85,7 @@ public class HomeVideoButtonHolder {
         banner.updateBannerStyle(NOT_INDICATOR);
         banner.setFocusable(false);
         banner.setFocusableInTouchMode(false);
+        banner.setDelayTime(5000);
     }
 
     public boolean isHasStart() {

@@ -105,7 +105,6 @@ public class HomeActivity extends Activity {
             isFist = false;
 //            mParent.getChildAt(0).requestFocus();
         }
-        LogUtil.e("onWindowFocusChanged----------" + hasFocus);
     }
 
     @Override
@@ -176,6 +175,14 @@ public class HomeActivity extends Activity {
         checkIqiyiAndLoad();
         checkTencentAndLoad();
         checkYoukuAndLoad();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mParent.getChildCount() > 0 && !mParent.getChildAt(0).hasFocus()) {
+                    mParent.getChildAt(0).requestFocus();
+                }
+            }
+        }, 500);
     }
 
     private void loadShortCut() {

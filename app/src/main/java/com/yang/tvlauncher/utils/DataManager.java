@@ -240,7 +240,7 @@ public class DataManager {
         a.setVersionCode(1);
         a.setVersionName("1");
         a.setAppName("银河奇异果");
-        a.setPackageName("com.gitvdemo.video");
+        a.setPackageName("com.gitvvideo.huanqiuzhidacpa");
         beans.add(a);
 
         AppInfoBean b = new AppInfoBean();
