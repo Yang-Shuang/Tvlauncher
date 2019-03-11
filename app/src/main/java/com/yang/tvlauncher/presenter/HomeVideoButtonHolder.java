@@ -22,7 +22,9 @@ import com.yang.tvlauncher.request.ResponseListener;
 import com.yang.tvlauncher.request.TencentRequest;
 import com.yang.tvlauncher.request.YoukuRequest;
 import com.yang.tvlauncher.utils.ImageManager;
+import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
+import com.yang.tvlauncher.utils.StringUtil;
 import com.youth.banner.Banner;
 
 
@@ -93,17 +95,23 @@ public class HomeVideoButtonHolder {
     }
 
     public void setData(HashMap<String, Object> map) {
-        if (hasStart) return;
         this.map = map;
-        icon.setImageDrawable((Drawable) map.get("icon"));
-        title.setText(map.get("name").toString());
+        String packageName = (String) this.map.get("package");
+        if (!StringUtil.isEmpty(packageName)) {
+            icon.setImageDrawable((Drawable) map.get("icon"));
+            title.setText(map.get("name").toString());
+        }
+        if (hasStart) return;
         requestBannerData();
     }
 
-    private void requestBannerData() {
+    public HashMap<String, Object> getData() {
+        return this.map;
+    }
 
-        String packageName = (String) this.map.get("package");
-        BaseRequest request = getRequest(packageName);
+    private void requestBannerData() {
+        String type = (String) this.map.get("type");
+        BaseRequest request = getRequest(type);
         request.request(new ResponseListener() {
             @Override
             public void onResponse(List<HashMap<String, String>> data) {
@@ -127,6 +135,7 @@ public class HomeVideoButtonHolder {
                             banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                                 @Override
                                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
                                 }
 
                                 @Override
@@ -159,12 +168,12 @@ public class HomeVideoButtonHolder {
         firstLoad = false;
     }
 
-    private BaseRequest getRequest(String packageName) {
-        if (packageName.equals(IQIYI)) {
+    private BaseRequest getRequest(String type) {
+        if (type.equals(IQIYI)) {
             return new IqiyiRequest();
-        } else if (packageName.equals(YUNSHITING)) {
+        } else if (type.equals(YUNSHITING)) {
             return new TencentRequest();
-        } else if (packageName.equals(KUMIAO)) {
+        } else if (type.equals(KUMIAO)) {
             return new YoukuRequest();
         }
         return null;

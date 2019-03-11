@@ -1,5 +1,6 @@
 package com.yang.tvlauncher.request;
 
+import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.NetUitls;
 import com.yang.tvlauncher.utils.StringUtil;
 
@@ -34,6 +35,7 @@ public class TencentRequest extends BaseRequest {
                                 HashMap<String, String> map = new HashMap<>();
                                 String imageUrl = element.attr("data-bgimage");
                                 Elements nameNode = element.getElementsByClass("tit");
+                                if (StringUtil.isEmpty(imageUrl)) continue;
                                 Element element1 = nameNode.first();
                                 map.put("name", element1.text());
                                 map.put("image", "http:" + imageUrl);
@@ -57,8 +59,10 @@ public class TencentRequest extends BaseRequest {
             listener.onResponse(data);
         }
     }
+
     public void request(final ResponseListener listener, boolean refresh) {
         if ((data == null || data.size() == 0) || refresh) {
+            LogUtil.e("请求 vqq 数据......");
             NetUitls.getHtmlString("https://v.qq.com/", new NetUitls.ReqeustListener() {
                 @Override
                 public void onResponse(String htmlString) {
@@ -71,14 +75,13 @@ public class TencentRequest extends BaseRequest {
                             ArrayList<HashMap<String, String>> data = new ArrayList<>();
                             for (Element element : childs) {
                                 String imageUrl = element.attr("data-bgimage");
-                                if (!StringUtil.isEmpty(imageUrl)){
+                                if (!StringUtil.isEmpty(imageUrl)) {
                                     HashMap<String, String> map = new HashMap<>();
                                     Elements nameNode = element.getElementsByClass("text");
                                     map.put("name", nameNode.text());
                                     map.put("image", "http:" + imageUrl);
                                     data.add(map);
                                 }
-
                             }
                             listener.onResponse(data);
                         } else {

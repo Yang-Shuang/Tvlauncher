@@ -136,6 +136,26 @@ public class DataManager {
         return beans;
     }
 
+    public AppInfoBean getShortCutApp(int position) {
+        AppInfoBean bean = null;
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query("t_shortcuts", null, "position=?", new String[]{"" + position}, null, null, "position ASC", null);
+        List<AppInfoBean> beans = new ArrayList<>();
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                bean = new AppInfoBean();
+                bean.setAppName(cursor.getString(cursor.getColumnIndex("name")));
+                bean.setPackageName(cursor.getString(cursor.getColumnIndex("package")));
+                bean.setAppIcon(imageMap.get(bean.getPackageName()));
+                break;
+            }
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return bean;
+    }
+
     public List<AppInfoBean> getRowApps(int rid, boolean same) {
         TVDataHelper helper = TVDataHelper.getIntance(mContext);
         SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
@@ -203,10 +223,44 @@ public class DataManager {
         values.put("name", bean.getAppName());
         values.put("package", bean.getPackageName());
         values.put("position", position);
-        int result = database.update("t_shortcuts", values, "package=?", new String[]{bean.getPackageName()});
+        int result = database.update("t_shortcuts", values, "position=?", new String[]{"" + position});
         if (result < 1) {
             database.insert("t_shortcuts", null, values);
         }
+    }
+
+    public void saveHomeVideoApp(int position, String packageName) {
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase database = helper.getWritableDatabase();
+        int result = 0;
+        ContentValues values = new ContentValues();
+        values.put("position", position);
+        if (!StringUtil.isEmpty(packageName)) {
+            values.put("package", packageName);
+            result = database.update("t_home_videos", values, "position=?", new String[]{"" + position});
+        }
+        if (result < 1) {
+            database.insert("t_home_videos", null, values);
+        }
+    }
+
+    public AppInfoBean getHomeVideoApp(int position) {
+        AppInfoBean bean = null;
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query("t_home_videos", null, "position=?", new String[]{"" + position}, null, null, null, null);
+        String packageName = null;
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                packageName = cursor.getString(cursor.getColumnIndex("package"));
+                break;
+            }
+        }
+        if (StringUtil.isEmpty(packageName)) return null;
+        bean = getAppInfo(packageName);
+        cursor.close();
+        sqLiteDatabase.close();
+        return bean;
     }
 
     private int getRid(int category) {

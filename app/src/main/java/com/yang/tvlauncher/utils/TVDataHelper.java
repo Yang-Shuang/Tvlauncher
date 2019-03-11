@@ -31,7 +31,7 @@ public class TVDataHelper extends SQLiteOpenHelper {
     private static final String FOREIGN = "foreign key";
     private static final String AUTO_INCREMENT = "autoincrement";
     private static final String NOT_NULL = "not null";
-
+    private static boolean CLEAR = true;
     private static TVDataHelper mMySqliteHelper;
 
     public static TVDataHelper getIntance(Context context) {
@@ -64,6 +64,7 @@ public class TVDataHelper extends SQLiteOpenHelper {
             }
             for (String s : sqls) {
                 try {
+                    LogUtil.i("执行SQL ： " + s);
                     db.execSQL(s);
                 } catch (Exception e) {
                     LogUtil.e(e.getMessage());
@@ -114,13 +115,21 @@ public class TVDataHelper extends SQLiteOpenHelper {
         if (bean == null || bean.getInfoList() == null || bean.getInfoList().size() == 0) {
             LogUtil.i("解析数据库预设信息失败...");
         } else {
-            List<String> sqls = createSqls(true, bean, oldVersion);
+            List<String> sqls = null;
+            if (CLEAR) {
+                sqls = createClearSql(bean);
+                List<String> createSqls = createSqls(false, bean, oldVersion);
+                sqls.addAll(createSqls);
+            } else {
+                sqls = createSqls(true, bean, oldVersion);
+            }
             if (sqls == null || sqls.size() == 0) {
                 LogUtil.i("SQL语句为空...");
                 return;
             }
             for (String s : sqls) {
                 try {
+                    LogUtil.i("执行SQL ： " + s);
                     db.execSQL(s);
                 } catch (Exception e) {
                     LogUtil.e(e.getMessage());
@@ -140,46 +149,70 @@ public class TVDataHelper extends SQLiteOpenHelper {
         }
     }
 
+    private List<String> createClearSql(DBInfoBean bean) {
+        ArrayList<String> sqlStrings = null;
+        List<DBInfoBean.InfoListBean> beans = bean.getInfoList();
+        DBInfoBean.InfoListBean currentInfo = null;
+        for (DBInfoBean.InfoListBean b : beans) {
+            if (b.getVersion() == BuildConfig.DB_VERSION) {
+                currentInfo = b;
+                break;
+            }
+        }
+        if (currentInfo == null) return null;
+        sqlStrings = new ArrayList<>();
+        for (DBInfoBean.InfoListBean.TablesBean tablesBean : currentInfo.getTables()) {
+            sqlStrings.add("drop table " + tablesBean.getName());
+        }
+        return sqlStrings;
+    }
+
     private List<String> createSqls(boolean alter, DBInfoBean bean, int oldversion) {
         LogUtil.i("创建SQL语句，类型 [ " + (alter ? "修改" : "创建") + " ]...");
         ArrayList<String> sqlStrings = null;
+        List<DBInfoBean.InfoListBean> beans = bean.getInfoList();
+        DBInfoBean.InfoListBean currentInfo = null;
+        DBInfoBean.InfoListBean oldInfo = null;
+        for (DBInfoBean.InfoListBean b : beans) {
+            if (b.getVersion() == BuildConfig.DB_VERSION) {
+                currentInfo = b;
+            }
+            if (b.getVersion() == oldversion) {
+                oldInfo = b;
+            }
+        }
+        if (currentInfo == null) return null;
+        sqlStrings = new ArrayList<>();
         if (alter) {
             //
         } else {
-            List<DBInfoBean.InfoListBean> beans = bean.getInfoList();
-            DBInfoBean.InfoListBean info = null;
-            for (DBInfoBean.InfoListBean b : beans) {
-                if (b.getVersion() == BuildConfig.DB_VERSION) {
-                    info = b;
-                    break;
-                }
-            }
-            if (info != null) {
-                sqlStrings = new ArrayList<>();
-                for (DBInfoBean.InfoListBean.TablesBean tablesBean : info.getTables()) {
-                    String sqlString = "create table " + tablesBean.getName() + "(";
-                    for (int i = 0; i < tablesBean.getColumn().size(); i++) {
-                        DBInfoBean.InfoListBean.TablesBean.ColumnBean columnBean = tablesBean.getColumn().get(i);
-                        String key = "";
-                        String foreignSql = "";
-                        if (columnBean.getKeyType() != null) {
-                            key = columnBean.getKeyType().equalsIgnoreCase("primary") ? PRIMARY : columnBean.getKeyType().equalsIgnoreCase("foreign") ? FOREIGN : "";
-                            if (columnBean.getKeyType().equalsIgnoreCase("foreign")) {
-                                foreignSql = ",FOREIGN KEY(" + columnBean.getName() + ") REFERENCES " + columnBean.getReferences().getTname() + "(" + columnBean.getReferences().getCname() + ")";
-                            }
-                        }
-                        String increment = columnBean.isIncrement() ? AUTO_INCREMENT : "";
-                        String isNull = columnBean.isAllowEmpty() ? "" : NOT_NULL;
-
-                        sqlString = sqlString + columnBean.getName() + SPACE
-                                + columnBean.getType() + SPACE
-                                + (key.length() > 0 ? key + SPACE : "")
-                                + (increment.length() > 0 ? increment + SPACE : "") + isNull + foreignSql + (i == tablesBean.getColumn().size() - 1 ? ")" : ",");
-                    }
-                    sqlStrings.add(sqlString);
-                }
+            for (DBInfoBean.InfoListBean.TablesBean tablesBean : currentInfo.getTables()) {
+                sqlStrings.add(createTableSql(tablesBean));
             }
         }
         return sqlStrings;
+    }
+
+    private String createTableSql(DBInfoBean.InfoListBean.TablesBean tablesBean) {
+        String sqlString = "create table " + tablesBean.getName() + "(";
+        for (int i = 0; i < tablesBean.getColumn().size(); i++) {
+            DBInfoBean.InfoListBean.TablesBean.ColumnBean columnBean = tablesBean.getColumn().get(i);
+            String key = "";
+            String foreignSql = "";
+            if (columnBean.getKeyType() != null) {
+                key = columnBean.getKeyType().equalsIgnoreCase("primary") ? PRIMARY : columnBean.getKeyType().equalsIgnoreCase("foreign") ? FOREIGN : "";
+                if (columnBean.getKeyType().equalsIgnoreCase("foreign")) {
+                    foreignSql = ",FOREIGN KEY(" + columnBean.getName() + ") REFERENCES " + columnBean.getReferences().getTname() + "(" + columnBean.getReferences().getCname() + ")";
+                }
+            }
+            String increment = columnBean.isIncrement() ? AUTO_INCREMENT : "";
+            String isNull = columnBean.isAllowEmpty() ? "" : NOT_NULL;
+
+            sqlString = sqlString + columnBean.getName() + SPACE
+                    + columnBean.getType() + SPACE
+                    + (key.length() > 0 ? key + SPACE : "")
+                    + (increment.length() > 0 ? increment + SPACE : "") + isNull + foreignSql + (i == tablesBean.getColumn().size() - 1 ? ")" : ",");
+        }
+        return sqlString;
     }
 }

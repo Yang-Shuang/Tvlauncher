@@ -71,6 +71,7 @@ public class HomeActivity extends Activity {
     private ChooseShortCutDialog dialog;
 
     private OnShortCutsClickListener onShortCutsClickListener;
+    private OnBannerClickListener onBannerClickListener;
     private int clickPosition;
     private boolean isFist = true;
     private AllAppsDialog mAllAppsDialog;
@@ -131,7 +132,6 @@ public class HomeActivity extends Activity {
 
         imageHeight = params.height / 2;
         mParent.setLayoutParams(params);
-//        mParent.setPadding(ScreenUtil.dp2px(20), 0, ScreenUtil.dp2px(20), 0);
         mParent.setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
 
         mShortCutParent.setPadding(ScreenUtil.dp2px(20), 0, ScreenUtil.dp2px(20), 0);
@@ -175,19 +175,20 @@ public class HomeActivity extends Activity {
         checkIqiyiAndLoad();
         checkTencentAndLoad();
         checkYoukuAndLoad();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mParent.getChildCount() > 0 && !mParent.getChildAt(0).hasFocus()) {
-                    mParent.getChildAt(0).requestFocus();
+        if (!mParent.hasFocus() && !mShortCutParent.hasFocus()) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mParent.getChildCount() > 0 && !mParent.getChildAt(0).hasFocus()) {
+                        mParent.getChildAt(0).requestFocus();
+                    }
                 }
-            }
-        }, 500);
+            }, 500);
+        }
     }
 
     private void loadShortCut() {
         LogUtil.e("---------开始加载快捷方式---------");
-        List<AppInfoBean> mdata = DataManager.getInstance(this).getShortCutApp();
         for (int i = 0; i < 9; i++) {
             HomeShortCartHolder holder = null;
             View parent = null;
@@ -212,8 +213,8 @@ public class HomeActivity extends Activity {
                 bean = new AppInfoBean();
                 bean.setAppName("全部程序");
                 bean.setAppIcon(getResources().getDrawable(R.drawable.icon_apps));
-            } else if (mdata.size() >= i + 1) {
-                bean = mdata.get(i);
+            } else {
+                bean = DataManager.getInstance(this).getShortCutApp(i);
             }
             if (bean == null) {
                 bean = new AppInfoBean();
@@ -229,12 +230,42 @@ public class HomeActivity extends Activity {
                     onShortCutsClickListener.onItemClick(finalI, v.getTag(R.id.viewData));
                 }
             });
-
         }
     }
 
     private void initEventListener() {
         initDialog();
+        if (onBannerClickListener == null) {
+            onBannerClickListener = new OnBannerClickListener() {
+                @Override
+                public void onItemClick(int position, Object data) {
+                    clickPosition = position;
+                    switch (position) {
+                        case 101:
+                        case 102:
+                        case 103:
+                            HashMap<String, Object> map = (HashMap<String, Object>) data;
+                            String packageName = (String) map.get("package");
+                            if (StringUtil.isEmpty(packageName)) {
+                                ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
+                                AppInfoBean bean = new AppInfoBean();
+                                bean.setAppName("清除");
+                                bean.setAppIcon(getResources().getDrawable(R.drawable.icon_delete));
+                                beans.add(bean);
+                                dialog.setData(beans);
+                                dialog.show(getFragmentManager());
+                            } else {
+                                Intent intent = AppUtil.getAppIntent(packageName);
+                                if (intent != null) {
+                                    startActivity(intent);
+                                }
+                            }
+                        default:
+                            break;
+                    }
+                }
+            };
+        }
         if (onShortCutsClickListener == null) {
             onShortCutsClickListener = new OnShortCutsClickListener() {
                 @Override
@@ -282,17 +313,33 @@ public class HomeActivity extends Activity {
         dialog.setOnSelectedAppListener(new ChooseShortCutDialog.onSelectedAppListener() {
             @Override
             public void onSelectedApp(AppInfoBean bean) {
-                if (mShortCutParent.getChildAt(clickPosition) != null) {
-                    View parent = mShortCutParent.getChildAt(clickPosition);
-                    HomeShortCartHolder holder = (HomeShortCartHolder) parent.getTag(R.id.viewHolder);
-                    if (StringUtil.isEmpty(bean.getPackageName())) {
-                        bean.setAppName("添加");
-                        bean.setAppIcon(getResources().getDrawable(R.drawable.icon_add));
-                    } else {
-                        DataManager.getInstance(HomeActivity.this).saveShortCut(bean, clickPosition);
+                if (clickPosition < 100) {
+                    if (mShortCutParent.getChildAt(clickPosition) != null) {
+                        View parent = mShortCutParent.getChildAt(clickPosition);
+                        HomeShortCartHolder holder = (HomeShortCartHolder) parent.getTag(R.id.viewHolder);
+                        if (StringUtil.isEmpty(bean.getPackageName())) {
+                            bean.setAppName("添加");
+                            bean.setAppIcon(getResources().getDrawable(R.drawable.icon_add));
+                        } else {
+                            DataManager.getInstance(HomeActivity.this).saveShortCut(bean, clickPosition);
+                        }
+                        parent.setTag(R.id.viewData, bean);
+                        holder.setData(bean);
                     }
-                    parent.setTag(R.id.viewData, bean);
-                    holder.setData(bean);
+                } else {
+                    if (mParent.getChildAt(clickPosition - 101) != null) {
+                        View parent = mParent.getChildAt(clickPosition - 101);
+                        if (!StringUtil.isEmpty(bean.getPackageName())) {
+                            DataManager.getInstance(HomeActivity.this).saveHomeVideoApp(clickPosition - 101, bean.getPackageName());
+                        }
+                        HomeVideoButtonHolder holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
+                        HashMap<String, Object> map = holder.getData();
+                        map.put("name", bean.getAppName());
+                        map.put("package", bean.getPackageName());
+                        map.put("icon", bean.getAppIcon());
+                        parent.setTag(R.id.viewData, map);
+                        holder.setData(map);
+                    }
                 }
             }
         });
@@ -300,129 +347,99 @@ public class HomeActivity extends Activity {
     }
 
     private void checkIqiyiAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getAppInfo(VideoButtonHolder.IQIYI);
-        if (bean != null) {
-            View parent = null;
-            HomeVideoButtonHolder holder = null;
-            if (mParent.getChildCount() == 0) {
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else if (mParent.getChildAt(0) instanceof TextView) {
-                mParent.removeViewAt(0);
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else {
-                parent = mParent.getChildAt(0);
-                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-            }
-            if (holder.isHasStart()) return;
-            HashMap<String, Object> iqiyiData = new HashMap<>();
-            iqiyiData.put("name", bean.getAppName());
-            iqiyiData.put("package", VideoButtonHolder.IQIYI);
-            iqiyiData.put("icon", bean.getAppIcon());
-            parent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = AppUtil.getAppIntent(VideoButtonHolder.IQIYI);
-                    if (intent != null) {
-                        startActivity(intent);
-                    }
-                }
-            });
-            holder.setData(iqiyiData);
-        } else if (mParent.getChildAt(0) == null) {
-            mParent.addView(notInstallView("没有安装奇异果"));
+        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(0);
+        View parent = null;
+        HomeVideoButtonHolder holder = null;
+        if (mParent.getChildCount() == 0) {
+            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+            parent.setTag(R.id.viewHolder, holder);
+            mParent.addView(parent);
+        } else {
+            parent = mParent.getChildAt(0);
+            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
         }
+        if (holder.isHasStart()) return;
+        HashMap<String, Object> iqiyiData = new HashMap<>();
+        iqiyiData.put("type", HomeVideoButtonHolder.IQIYI);
+        if (bean != null) {
+            iqiyiData.put("name", bean.getAppName());
+            iqiyiData.put("package", bean.getPackageName());
+            iqiyiData.put("icon", bean.getAppIcon());
+        }
+        parent.setTag(R.id.viewData, iqiyiData);
+        parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBannerClickListener.onItemClick(101, v.getTag(R.id.viewData));
+            }
+        });
+        holder.setData(iqiyiData);
     }
 
     private void checkTencentAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getAppInfo(VideoButtonHolder.YUNSHITING);
-        if (bean != null) {
-            View parent = null;
-            HomeVideoButtonHolder holder = null;
-            if (mParent.getChildAt(1) == null) {
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else if (mParent.getChildAt(1) instanceof TextView) {
-                mParent.removeViewAt(1);
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else {
-                parent = mParent.getChildAt(1);
-                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-            }
-            if (holder.isHasStart()) return;
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("name", bean.getAppName());
-            data.put("package", VideoButtonHolder.YUNSHITING);
-            data.put("icon", bean.getAppIcon());
-            holder.setData(data);
-            parent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = AppUtil.getAppIntent(VideoButtonHolder.YUNSHITING);
-                    if (intent != null) {
-                        startActivity(intent);
-                    }
-                }
-            });
-        } else if (mParent.getChildAt(1) == null) {
-            mParent.addView(notInstallView("没有安装云视听极光"));
+        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(1);
+        View parent = null;
+        HomeVideoButtonHolder holder = null;
+        if (mParent.getChildAt(1) == null) {
+            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+            parent.setTag(R.id.viewHolder, holder);
+            mParent.addView(parent);
+        } else {
+            parent = mParent.getChildAt(1);
+            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
         }
+        if (holder.isHasStart()) return;
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("type", HomeVideoButtonHolder.YUNSHITING);
+        if (bean != null) {
+            data.put("name", bean.getAppName());
+            data.put("package", bean.getPackageName());
+            data.put("icon", bean.getAppIcon());
+        }
+        parent.setTag(R.id.viewData, data);
+        parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBannerClickListener.onItemClick(102, v.getTag(R.id.viewData));
+            }
+        });
+        holder.setData(data);
     }
 
     private void checkYoukuAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getAppInfo(VideoButtonHolder.KUMIAO);
-        if (bean != null) {
-            View parent = null;
-            HomeVideoButtonHolder holder = null;
-            if (mParent.getChildAt(2) == null) {
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else if (mParent.getChildAt(2) instanceof TextView) {
-                mParent.removeViewAt(2);
-                parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-                holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-                ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-                parent.setTag(R.id.viewHolder, holder);
-                mParent.addView(parent);
-            } else {
-                parent = mParent.getChildAt(2);
-                holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-            }
-            if (holder.isHasStart()) return;
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("name", bean.getAppName());
-            data.put("package", VideoButtonHolder.KUMIAO);
-            data.put("icon", bean.getAppIcon());
-            holder.setData(data);
-            parent.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = AppUtil.getAppIntent(VideoButtonHolder.KUMIAO);
-                    if (intent != null) {
-                        startActivity(intent);
-                    }
-                }
-            });
-        } else if (mParent.getChildAt(2) == null) {
-            mParent.addView(notInstallView("没有安装酷喵"));
+        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(2);
+        View parent = null;
+        HomeVideoButtonHolder holder = null;
+        if (mParent.getChildAt(2) == null) {
+            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
+            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
+            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
+            parent.setTag(R.id.viewHolder, holder);
+            mParent.addView(parent);
+        } else {
+            parent = mParent.getChildAt(2);
+            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
         }
+        if (holder.isHasStart()) return;
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("type", HomeVideoButtonHolder.KUMIAO);
+        if (bean != null) {
+            data.put("name", bean.getAppName());
+            data.put("package", bean.getPackageName());
+            data.put("icon", bean.getAppIcon());
+        }
+        holder.setData(data);
+        parent.setTag(R.id.viewData, data);
+        parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBannerClickListener.onItemClick(103, v.getTag(R.id.viewData));
+            }
+        });
     }
 
     private View notInstallView(String message) {
@@ -442,12 +459,25 @@ public class HomeActivity extends Activity {
         void onItemClick(int position, Object data);
     }
 
+    private interface OnBannerClickListener {
+        void onItemClick(int position, Object data);
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 if (mShortCutParent.hasFocus()) {
                     clickPosition = mShortCutParent.indexOfChild(mShortCutParent.getFocusedChild());
+                    ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
+                    AppInfoBean bean = new AppInfoBean();
+                    bean.setAppName("清除");
+                    bean.setAppIcon(getResources().getDrawable(R.drawable.icon_delete));
+                    beans.add(bean);
+                    dialog.setData(beans);
+                    dialog.show(getFragmentManager());
+                } else if (mParent.hasFocus()) {
+                    clickPosition = 101 + mParent.indexOfChild(mParent.getFocusedChild());
                     ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
                     AppInfoBean bean = new AppInfoBean();
                     bean.setAppName("清除");

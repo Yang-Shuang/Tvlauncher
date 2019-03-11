@@ -1,5 +1,6 @@
 package com.yang.tvlauncher.request;
 
+import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.NetUitls;
 import com.yang.tvlauncher.utils.StringUtil;
 
@@ -22,6 +23,7 @@ public class IqiyiRequest extends BaseRequest {
 
     public void request(final ResponseListener listener,boolean refresh) {
         if ((data == null || data.size() == 0) || refresh) {
+            LogUtil.e("请求 iqiyi 数据......");
             NetUitls.getHtmlString("http://www.iqiyi.com/", new NetUitls.ReqeustListener() {
                 @Override
                 public void onResponse(String htmlString) {

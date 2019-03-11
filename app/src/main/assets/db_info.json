@@ -218,6 +218,522 @@
           ]
         }
       ]
+    },
+    {
+      "version": 2,
+      "tables": [
+        {
+          "name": "t_home_videos",
+          "column": [
+            {
+              "name": "vid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_home_row",
+          "column": [
+            {
+              "name": "rid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_shortcuts",
+          "column": [
+            {
+              "name": "sid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_category",
+          "column": [
+            {
+              "name": "cid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": "primary",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_apps",
+          "column": [
+            {
+              "name": "aid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "cid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": "t_category",
+                "cname": "cid"
+              }
+            },
+            {
+              "name": "rid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": "t_home_row",
+                "cname": "rid"
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "versionName",
+              "type": "TEXT",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "versionCode",
+              "type": "INTEGER",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 3,
+      "tables": [
+        {
+          "name": "t_home_videos",
+          "column": [
+            {
+              "name": "vid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_home_row",
+          "column": [
+            {
+              "name": "rid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_shortcuts",
+          "column": [
+            {
+              "name": "sid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "position",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_category",
+          "column": [
+            {
+              "name": "cid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": "primary",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        },
+        {
+          "name": "t_apps",
+          "column": [
+            {
+              "name": "aid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": true,
+              "keyType": "PRIMARY",
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "cid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": "t_category",
+                "cname": "cid"
+              }
+            },
+            {
+              "name": "rid",
+              "type": "INTEGER",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": "t_home_row",
+                "cname": "rid"
+              }
+            },
+            {
+              "name": "name",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "package",
+              "type": "TEXT",
+              "allowEmpty": false,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "versionName",
+              "type": "TEXT",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            },
+            {
+              "name": "versionCode",
+              "type": "INTEGER",
+              "allowEmpty": true,
+              "limit": 20,
+              "increment": false,
+              "keyType": null,
+              "references": {
+                "tname": null,
+                "cname": null
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
