@@ -263,6 +263,26 @@ public class DataManager {
         return bean;
     }
 
+    public AppInfoBean getMatchingApp(String name, String packageName) {
+        AppInfoBean bean = null;
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase sqLiteDatabase = helper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query("t_apps", null, "package=? or name=?", new String[]{packageName, name}, null, null, "aid ASC", null);
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                bean = new AppInfoBean();
+                bean.setAid(cursor.getInt(cursor.getColumnIndex("aid")));
+                bean.setAppName(cursor.getString(cursor.getColumnIndex("name")));
+                bean.setPackageName(cursor.getString(cursor.getColumnIndex("package")));
+                bean.setAppIcon(imageMap.get(packageName));
+                break;
+            }
+        }
+        cursor.close();
+        sqLiteDatabase.close();
+        return bean;
+    }
+
     private int getRid(int category) {
         switch (category) {
             case 101:

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.yang.tvlauncher.presenter.HomeShortCartHolder;
 import com.yang.tvlauncher.presenter.HomeVideoButtonHolder;
-import com.yang.tvlauncher.presenter.VideoButtonHolder;
 import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
@@ -162,10 +161,10 @@ public class HomeActivity extends Activity {
                 break;
             case R.id.home_set_ll:
 //                startActivity(new Intent(this,LogActivity.class));
-                String log = FileIOUtils.readFile2String(LOG_FILE_PATH);
-                LogUtil.e("**********************************************************************************");
-                LogUtil.e(log);
-                LogUtil.e("**********************************************************************************");
+//                String log = FileIOUtils.readFile2String(LOG_FILE_PATH);
+//                LogUtil.e("**********************************************************************************");
+//                LogUtil.e(log);
+//                LogUtil.e("**********************************************************************************");
                 break;
         }
     }
@@ -348,6 +347,12 @@ public class HomeActivity extends Activity {
 
     private void checkIqiyiAndLoad() {
         AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(0);
+        if (bean == null) {
+            bean = DataManager.getInstance(this).getMatchingApp("银河奇异果", HomeVideoButtonHolder.IQIYI);
+            if (bean != null) {
+                DataManager.getInstance(this).saveHomeVideoApp(0, bean.getPackageName());
+            }
+        }
         View parent = null;
         HomeVideoButtonHolder holder = null;
         if (mParent.getChildCount() == 0) {
@@ -380,6 +385,12 @@ public class HomeActivity extends Activity {
 
     private void checkTencentAndLoad() {
         AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(1);
+        if (bean == null) {
+            bean = DataManager.getInstance(this).getMatchingApp("云视听极光", HomeVideoButtonHolder.YUNSHITING);
+            if (bean != null) {
+                DataManager.getInstance(this).saveHomeVideoApp(1, bean.getPackageName());
+            }
+        }
         View parent = null;
         HomeVideoButtonHolder holder = null;
         if (mParent.getChildAt(1) == null) {
@@ -412,6 +423,12 @@ public class HomeActivity extends Activity {
 
     private void checkYoukuAndLoad() {
         AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(2);
+        if (bean == null) {
+            bean = DataManager.getInstance(this).getMatchingApp("CIBN酷喵影视", HomeVideoButtonHolder.KUMIAO);
+            if (bean != null) {
+                DataManager.getInstance(this).saveHomeVideoApp(2, bean.getPackageName());
+            }
+        }
         View parent = null;
         HomeVideoButtonHolder holder = null;
         if (mParent.getChildAt(2) == null) {

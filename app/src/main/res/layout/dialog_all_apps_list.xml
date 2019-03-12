@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/diallog_all_apps_fl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/trans_default_background">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/dialog_all_app_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+</FrameLayout>

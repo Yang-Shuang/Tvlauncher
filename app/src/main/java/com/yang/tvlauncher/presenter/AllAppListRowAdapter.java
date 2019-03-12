@@ -7,27 +7,16 @@ import android.view.ViewGroup;
 
 import com.yang.tvlauncher.R;
 import com.yang.tvlauncher.bean.AppInfoBean;
-import com.yang.tvlauncher.utils.LogUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yangshuang
- * on 2018/12/18.
- */
+public class AllAppListRowAdapter extends RecyclerView.Adapter<DialogListItemHolder> {
 
-public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder> {
-
-    private List<AppInfoBean> mData;
+    private List<AppInfoBean> data;
     private OnItemClickListener listener;
 
-    public DialogListAdapter(List<AppInfoBean> mData) {
-        this.mData = mData;
-    }
-
-    public void setListener(OnItemClickListener listener) {
-        this.listener = listener;
+    public AllAppListRowAdapter(List<AppInfoBean> data) {
+        this.data = data;
     }
 
     @Override
@@ -39,8 +28,8 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
 
     @Override
     public void onBindViewHolder(DialogListItemHolder holder, final int position) {
-        holder.mesureLayoutSize(9);
-        final AppInfoBean bean = mData.get(position);
+        holder.mesureLayoutSize(10);
+        final AppInfoBean bean = data.get(position);
         holder.icon.setImageDrawable(bean.getAppIcon());
         holder.name.setText(bean.getAppName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +44,7 @@ public class DialogListAdapter extends RecyclerView.Adapter<DialogListItemHolder
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return data.size();
     }
 
     public interface OnItemClickListener {

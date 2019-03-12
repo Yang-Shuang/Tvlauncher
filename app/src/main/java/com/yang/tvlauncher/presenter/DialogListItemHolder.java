@@ -15,19 +15,34 @@ import com.yang.tvlauncher.utils.ScreenUtil;
  * on 2018/12/18.
  */
 
-public class DialogListItemHolder extends RecyclerView.ViewHolder{
+public class DialogListItemHolder extends RecyclerView.ViewHolder {
 
     TextView name;
     ImageView icon;
+    FrameLayout item_app_bcv;
+
     public DialogListItemHolder(View itemView) {
         super(itemView);
         icon = itemView.findViewById(R.id.item_app_icon_iv);
         name = itemView.findViewById(R.id.item_app_name_tv);
 
-        FrameLayout item_app_bcv = itemView.findViewById(R.id.item_app_bcv);
+        item_app_bcv = itemView.findViewById(R.id.item_app_bcv);
+        item_app_bcv.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    v.setBackgroundResource(R.drawable.bg_selected);
+                } else {
+                    v.setBackgroundResource(R.color.default_background);
 
-        int width = (int) (ScreenUtil.screen_width / 9f);
-        int height = (int) (ScreenUtil.screen_width / 9f);
+                }
+            }
+        });
+    }
+
+    public void mesureLayoutSize(int spanCount) {
+        int width = (int) (ScreenUtil.screen_width * 1f / spanCount);
+        int height = (int) (ScreenUtil.screen_width * 1f / spanCount);
 
         item_app_bcv.setLayoutParams(new ViewGroup.LayoutParams(width, height));
         item_app_bcv.setFocusable(true);
@@ -44,16 +59,5 @@ public class DialogListItemHolder extends RecyclerView.ViewHolder{
         params1.leftMargin = ScreenUtil.dp2px(10);
         params1.rightMargin = ScreenUtil.dp2px(10);
         name.setLayoutParams(params1);
-        item_app_bcv.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    v.setBackgroundResource(R.drawable.bg_selected);
-                } else {
-                    v.setBackgroundResource(R.color.default_background);
-
-                }
-            }
-        });
     }
 }
