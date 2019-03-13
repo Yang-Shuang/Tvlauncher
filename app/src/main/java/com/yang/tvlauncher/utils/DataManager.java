@@ -229,6 +229,12 @@ public class DataManager {
         }
     }
 
+    public void deleteShortCut(int position) {
+        TVDataHelper helper = TVDataHelper.getIntance(mContext);
+        SQLiteDatabase database = helper.getWritableDatabase();
+        int result = database.delete("t_shortcuts", "position=?", new String[]{"" + position});
+    }
+
     public void saveHomeVideoApp(int position, String packageName) {
         TVDataHelper helper = TVDataHelper.getIntance(mContext);
         SQLiteDatabase database = helper.getWritableDatabase();

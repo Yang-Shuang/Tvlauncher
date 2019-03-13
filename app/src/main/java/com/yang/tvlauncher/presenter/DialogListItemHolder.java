@@ -34,7 +34,6 @@ public class DialogListItemHolder extends RecyclerView.ViewHolder {
                     v.setBackgroundResource(R.drawable.bg_selected);
                 } else {
                     v.setBackgroundResource(R.color.default_background);
-
                 }
             }
         });

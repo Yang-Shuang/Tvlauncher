@@ -24,4 +24,8 @@
         <item name="android:colorPrimary">#00695C</item>
     </style>
 
+    <style name="FragmentDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+    </style>
 </resources>

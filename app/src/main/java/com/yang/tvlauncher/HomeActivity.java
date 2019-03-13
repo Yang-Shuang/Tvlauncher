@@ -25,11 +25,11 @@ import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
 import com.yang.tvlauncher.utils.TimeUtil;
+import com.yang.tvlauncher.utils.ToastUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -40,7 +40,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS;
-import static com.yang.tvlauncher.utils.TvExceptionHandler.LOG_FILE_PATH;
 
 public class HomeActivity extends Activity {
 
@@ -72,7 +71,6 @@ public class HomeActivity extends Activity {
     private OnShortCutsClickListener onShortCutsClickListener;
     private OnBannerClickListener onBannerClickListener;
     private int clickPosition;
-    private boolean isFist = true;
     private AllAppsDialog mAllAppsDialog;
     private MyHandler mHandler;
 
@@ -101,10 +99,6 @@ public class HomeActivity extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && isFist) {
-            isFist = false;
-//            mParent.getChildAt(0).requestFocus();
-        }
     }
 
     @Override
@@ -158,13 +152,10 @@ public class HomeActivity extends Activity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.home_clear_ll:
+                ToastUtil.toast("别点了，功能没加呢");
                 break;
             case R.id.home_set_ll:
-//                startActivity(new Intent(this,LogActivity.class));
-//                String log = FileIOUtils.readFile2String(LOG_FILE_PATH);
-//                LogUtil.e("**********************************************************************************");
-//                LogUtil.e(log);
-//                LogUtil.e("**********************************************************************************");
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
                 break;
         }
     }
@@ -204,11 +195,12 @@ public class HomeActivity extends Activity {
                 mShortCutParent.addView(parent);
             }
             AppInfoBean bean = null;
-            if (i == 7) {
-                bean = new AppInfoBean();
-                bean.setAppName("系统设置");
-                bean.setAppIcon(getResources().getDrawable(R.drawable.icon_sys_settings));
-            } else if (i == 8) {
+//            if (i == 7) {
+//                bean = new AppInfoBean();
+//                bean.setAppName("系统设置");
+//                bean.setAppIcon(getResources().getDrawable(R.drawable.icon_sys_settings));
+//            } else
+            if (i == 8) {
                 bean = new AppInfoBean();
                 bean.setAppName("全部程序");
                 bean.setAppIcon(getResources().getDrawable(R.drawable.icon_apps));
@@ -278,6 +270,7 @@ public class HomeActivity extends Activity {
                         case 4:
                         case 5:
                         case 6:
+                        case 7:
                             if (data == null || StringUtil.isEmpty(((AppInfoBean) data).getPackageName())) {
                                 ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
                                 AppInfoBean bean = new AppInfoBean();
@@ -294,11 +287,7 @@ public class HomeActivity extends Activity {
                                 }
                             }
                             break;
-                        case 7:
-                            startActivity(new Intent(Settings.ACTION_SETTINGS));
-                            break;
                         case 8:
-//                            startActivity(new Intent(HomeActivity.this, AppListActivity.class));
                             mAllAppsDialog.show(getFragmentManager());
                             break;
                     }
@@ -319,6 +308,7 @@ public class HomeActivity extends Activity {
                         if (StringUtil.isEmpty(bean.getPackageName())) {
                             bean.setAppName("添加");
                             bean.setAppIcon(getResources().getDrawable(R.drawable.icon_add));
+                            DataManager.getInstance(HomeActivity.this).deleteShortCut(clickPosition);
                         } else {
                             DataManager.getInstance(HomeActivity.this).saveShortCut(bean, clickPosition);
                         }
@@ -330,6 +320,8 @@ public class HomeActivity extends Activity {
                         View parent = mParent.getChildAt(clickPosition - 101);
                         if (!StringUtil.isEmpty(bean.getPackageName())) {
                             DataManager.getInstance(HomeActivity.this).saveHomeVideoApp(clickPosition - 101, bean.getPackageName());
+                        } else {
+                            return;
                         }
                         HomeVideoButtonHolder holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
                         HashMap<String, Object> map = holder.getData();
@@ -457,19 +449,6 @@ public class HomeActivity extends Activity {
                 onBannerClickListener.onItemClick(103, v.getTag(R.id.viewData));
             }
         });
-    }
-
-    private View notInstallView(String message) {
-        TextView textView = new TextView(this);
-        textView.setBackgroundColor(getColor(R.color.trans_default_background));
-        textView.setTextColor(Color.WHITE);
-        textView.setGravity(Gravity.CENTER);
-        textView.setText(message);
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams((int) (imageHeight / 3f * 5), (int) (imageHeight / 3f * 5));
-        p.rightMargin = ScreenUtil.dp2px(25);
-        textView.setLayoutParams(p);
-        return textView;
-
     }
 
     private interface OnShortCutsClickListener {

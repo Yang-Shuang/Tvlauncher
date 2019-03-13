@@ -1,5 +1,6 @@
 package com.yang.tvlauncher.presenter;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,11 +10,12 @@ import android.widget.TextView;
 
 import com.yang.tvlauncher.R;
 import com.yang.tvlauncher.bean.AppInfoBean;
+import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 
 import java.util.List;
 
-public class AllAppListRowHolder extends RecyclerView.ViewHolder {
+public class AllAppListRowHolder extends BaseViewHolder {
 
 
     private TextView title;
@@ -53,7 +55,19 @@ public class AllAppListRowHolder extends RecyclerView.ViewHolder {
 
     public void setData(List<AppInfoBean> beans) {
         mesureSize(beans.size());
-        recyclerView.setAdapter(new AllAppListRowAdapter(beans));
+        AllAppListRowAdapter allAppListRowAdapter = new AllAppListRowAdapter(beans);
+        allAppListRowAdapter.setListener(new AllAppListRowAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, Object data) {
+                if (data == null) return;
+                String packageName = ((AppInfoBean) data).getPackageName();
+                Intent intent = AppUtil.getAppIntent(packageName);
+                if (intent != null) {
+                    recyclerView.getContext().startActivity(intent);
+                }
+            }
+        });
+        recyclerView.setAdapter(allAppListRowAdapter);
     }
 
     class MyItemDecoration extends RecyclerView.ItemDecoration {

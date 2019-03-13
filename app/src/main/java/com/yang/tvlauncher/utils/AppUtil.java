@@ -42,4 +42,6 @@ public class AppUtil {
 
         return false;
     }
+
+    public static void runAsynTask(){}
 }

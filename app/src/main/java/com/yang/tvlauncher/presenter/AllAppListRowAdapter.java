@@ -19,6 +19,10 @@ public class AllAppListRowAdapter extends RecyclerView.Adapter<DialogListItemHol
         this.data = data;
     }
 
+    public void setListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public DialogListItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app_button, null);
