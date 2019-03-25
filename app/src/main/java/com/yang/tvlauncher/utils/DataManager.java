@@ -44,7 +44,7 @@ public class DataManager {
 
     public void getPackageInfos() {
         ArrayList<AppInfoBean> appList = new ArrayList<AppInfoBean>(); //用来存储获取的应用信息数据
-        appList.addAll(0, getTestData());
+//        appList.addAll(0, getTestData());
         List<PackageInfo> packages = mContext.getPackageManager().getInstalledPackages(0);
         imageMap = new HashMap<>();
         for (int i = 0; i < packages.size(); i++) {
