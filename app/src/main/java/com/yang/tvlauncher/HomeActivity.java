@@ -58,6 +58,7 @@ public class HomeActivity extends Activity {
             } else {
                 sendEmptyMessageDelayed(101, 1000);
             }
+            mReference.get().changeBackground();
         }
     }
 
@@ -67,13 +68,14 @@ public class HomeActivity extends Activity {
     private LinearLayout mParent;
     private LinearLayout mShortCutParent;
     private ChooseShortCutDialog dialog;
+    private LinearLayout home_content_ll;
 
     private OnShortCutsClickListener onShortCutsClickListener;
     private OnBannerClickListener onBannerClickListener;
     private int clickPosition;
     private AllAppsDialog mAllAppsDialog;
     private MyHandler mHandler;
-
+    private static final int[] backgroundIds = {R.drawable.bg_default_background, R.drawable.bg_background1, R.drawable.bg_background2, R.drawable.bg_background3, R.drawable.bg_background4};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,7 @@ public class HomeActivity extends Activity {
 
     private void initView() {
         mParent = findViewById(R.id.home_header_ll);
+        home_content_ll = findViewById(R.id.home_content_ll);
         mShortCutParent = findViewById(R.id.home_shortcut_fll);
         timeTv = findViewById(R.id.main_time_tv);
         dateTv = findViewById(R.id.main_date_tv);
@@ -152,11 +155,22 @@ public class HomeActivity extends Activity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.home_clear_ll:
+//                changeBackground();
                 ToastUtil.toast("别点了，功能没加呢");
                 break;
             case R.id.home_set_ll:
                 startActivity(new Intent(Settings.ACTION_SETTINGS));
                 break;
+        }
+    }
+
+    public int backGroundIdIndex = 0;
+    public void changeBackground() {
+        home_content_ll.setBackgroundResource(backgroundIds[backGroundIdIndex]);
+        if (backGroundIdIndex >= 4){
+            backGroundIdIndex = 0;
+        } else {
+            backGroundIdIndex++;
         }
     }
 

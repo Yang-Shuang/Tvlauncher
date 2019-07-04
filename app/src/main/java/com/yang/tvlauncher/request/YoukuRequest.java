@@ -28,6 +28,49 @@ public class YoukuRequest extends BaseRequest {
                 public void onResponse(String htmlString) {
                     if (htmlString != null && !htmlString.equals("")) {
                         Document document = Jsoup.parse(htmlString);
+                        Elements childs = document.body().getElementsByClass("focusswiper_focus_item");
+                        if (childs.size() > 0) {
+                            ArrayList<HashMap<String, String>> data = new ArrayList<>();
+                            for (Element element : childs) {
+                                HashMap<String, String> map = new HashMap<>();
+                                String imageUrl = "";
+                                String style = element.attr("style");
+                                if (!StringUtil.isEmpty(style) && style.contains("url(")) {
+                                    imageUrl = style.substring(style.indexOf("url(") + 4, style.indexOf(")"));
+                                }
+                                if (!StringUtil.isEmpty(imageUrl)) {
+                                    imageUrl = "http:" + imageUrl;
+                                }
+                                map.put("name", element.attr("alt"));
+                                map.put("image", imageUrl);
+                                data.add(map);
+                            }
+                            listener.onResponse(data);
+                        } else {
+                            listener.onResponse(null);
+                        }
+                    } else {
+                        listener.onResponse(null);
+                    }
+                }
+                @Override
+                public void onFailure(String msg) {
+                    listener.onResponse(null);
+                }
+            });
+        } else {
+            listener.onResponse(data);
+        }
+    }
+
+    public void odlRequest(final ResponseListener listener, boolean refresh) {
+        if ((data == null || data.size() == 0) || refresh) {
+            LogUtil.e("请求 youku 数据......");
+            NetUitls.getHtmlString("http://www.youku.com/", new NetUitls.ReqeustListener() {
+                @Override
+                public void onResponse(String htmlString) {
+                    if (htmlString != null && !htmlString.equals("")) {
+                        Document document = Jsoup.parse(htmlString);
                         Elements elements = document.body().getElementsByClass("focus-list");
                         Elements childs = elements.get(0).children();
                         if (childs.size() > 0) {
