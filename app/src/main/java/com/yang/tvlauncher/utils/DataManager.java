@@ -52,7 +52,7 @@ public class DataManager {
             AppInfoBean tmpInfo = new AppInfoBean();
             tmpInfo.setAppName(packageInfo.applicationInfo.loadLabel(mContext.getPackageManager()).toString());
             tmpInfo.setPackageName(packageInfo.packageName);
-            LogUtil.e("package---" + packageInfo.packageName);
+            LogUtil.e("package---" + packageInfo.packageName + " App:" + tmpInfo.getAppName());
             tmpInfo.setVersionName(packageInfo.versionName);
             tmpInfo.setVersionCode(packageInfo.versionCode);
             tmpInfo.setAppIcon(packageInfo.applicationInfo.loadIcon(mContext.getPackageManager()));

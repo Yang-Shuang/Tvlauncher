@@ -156,7 +156,12 @@ public class HomeActivity extends Activity {
         switch (view.getId()) {
             case R.id.home_clear_ll:
 //                changeBackground();
-                ToastUtil.toast("别点了，功能没加呢");
+                //com.coolux.clearnup
+//                ToastUtil.toast("别点了，功能没加呢");
+                Intent intent = AppUtil.getAppIntent("com.coolux.clearnup");
+                if (intent != null) {
+                    startActivity(intent);
+                }
                 break;
             case R.id.home_set_ll:
                 startActivity(new Intent(Settings.ACTION_SETTINGS));
