@@ -2,6 +2,7 @@ package com.yang.tvlauncher.request;
 
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.NetUitls;
+import com.yang.tvlauncher.utils.SeekerUtils;
 import com.yang.tvlauncher.utils.StringUtil;
 
 import org.jsoup.Jsoup;
@@ -21,10 +22,20 @@ public class IqiyiRequest extends BaseRequest {
 
     private static ArrayList<HashMap<String, String>> data;
 
-    public void request(final ResponseListener listener,boolean refresh) {
+    @Override
+    public void request(ResponseListener listener, boolean refresh) {
+
+    }
+
+    @Override
+    public void seek(SeekerUtils.SeekerListener<String> listener, String url) {
+        SeekerUtils.seekBannerImage(url, listener);
+    }
+
+    public void requestOld(final ResponseListener listener, boolean refresh) {
         if ((data == null || data.size() == 0) || refresh) {
             LogUtil.e("请求 iqiyi 数据......");
-            NetUitls.getHtmlString("http://www.iqiyi.com/", new NetUitls.ReqeustListener() {
+            NetUitls.getHtmlString("https://www.iqiyi.com/", new NetUitls.ReqeustListener() {
                 @Override
                 public void onResponse(String htmlString) {
                     if (htmlString != null && !htmlString.equals("")) {
@@ -58,6 +69,7 @@ public class IqiyiRequest extends BaseRequest {
 
                 @Override
                 public void onFailure(String msg) {
+                    LogUtil.e("onFailure : " + msg);
                     listener.onResponse(null);
                 }
             });

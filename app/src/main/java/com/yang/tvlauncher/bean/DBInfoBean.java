@@ -1,6 +1,5 @@
 package com.yang.tvlauncher.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
@@ -9,7 +8,6 @@ import java.util.List;
  * yangshuang on 2018/11/29.
  */
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class DBInfoBean {
 
     private List<Integer> allowUpdateversion;
@@ -31,7 +29,6 @@ public class DBInfoBean {
         this.infoList = infoList;
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class InfoListBean {
         /**
          * version : 1
@@ -57,7 +54,6 @@ public class DBInfoBean {
             this.tables = tables;
         }
 
-        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class TablesBean {
             /**
              * name : t_home_row
@@ -83,7 +79,6 @@ public class DBInfoBean {
                 this.column = column;
             }
 
-            @JsonIgnoreProperties(ignoreUnknown = true)
             public static class ColumnBean {
                 /**
                  * name : rid
@@ -159,7 +154,6 @@ public class DBInfoBean {
                     this.references = references;
                 }
 
-                @JsonIgnoreProperties(ignoreUnknown = true)
                 public static class ReferencesBean {
                     /**
                      * tname : null

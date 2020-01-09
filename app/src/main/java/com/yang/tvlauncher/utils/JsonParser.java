@@ -1,14 +1,15 @@
 package com.yang.tvlauncher.utils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -18,23 +19,74 @@ import java.util.List;
 
 public class JsonParser {
 
-    private static ObjectMapper mapper = new ObjectMapper();
-
-    static {
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-    }
 
     public static <T> T jsonFile2Bean(File file, Class<T> clazz) throws IOException {
-        return mapper.readValue(file, clazz);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file)));
+            // 创建StringBuffer
+            StringBuffer stringBuffer = new StringBuffer();
+            String temp = "";
+            try {
+                // 一行一行的读
+                while ((temp = bufferedReader.readLine()) != null) {
+                    stringBuffer.append(temp);
+                }
+                String presonsString = stringBuffer.toString();
+                // 解析,创建Gson,需要导入gson的jar包
+                Gson gson = new Gson();
+                T t = gson.fromJson(presonsString,clazz);
+                return t;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static <T> T jsonFile2Bean(InputStream stream, Class<T> clazz) throws IOException {
-        return mapper.readValue(stream, clazz);
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(stream));
+        // 创建StringBuffer
+        StringBuffer stringBuffer = new StringBuffer();
+        String temp = "";
+        try {
+            // 一行一行的读
+            while ((temp = bufferedReader.readLine()) != null) {
+                stringBuffer.append(temp);
+            }
+            String presonsString = stringBuffer.toString();
+            // 解析,创建Gson,需要导入gson的jar包
+            Gson gson = new Gson();
+            T t = gson.fromJson(presonsString,clazz);
+            return t;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static <T> List<T> jsonFile2List(InputStream stream, Class<T> clazz) throws IOException {
-        CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, clazz);
-        return mapper.readValue(stream, listType);
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(stream));
+            // 创建StringBuffer
+            StringBuffer stringBuffer = new StringBuffer();
+            String temp = "";
+            try {
+                    // 一行一行的读
+                    while ((temp = bufferedReader.readLine()) != null) {
+                            stringBuffer.append(temp);
+                    }
+                    String presonsString = stringBuffer.toString();
+                    // 解析,创建Gson,需要导入gson的jar包
+                    Gson gson = new Gson();
+                    return gson.fromJson(presonsString,new TypeToken<List<T>>(){}.getType());
+            } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+            }
     }
 }

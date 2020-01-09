@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
  * yangshuang on 2018/11/29.
  */
 
-public class AppInfoBean {
+public class AppInfoBean extends BaseListItem{
     private String appName = "";
     private String packageName = "";
     private String versionName = "";

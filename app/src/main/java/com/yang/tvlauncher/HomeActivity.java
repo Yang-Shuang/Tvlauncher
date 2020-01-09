@@ -2,15 +2,14 @@ package com.yang.tvlauncher;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,12 +19,10 @@ import com.yang.tvlauncher.presenter.HomeVideoButtonHolder;
 import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
-import com.yang.tvlauncher.utils.FileIOUtils;
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
 import com.yang.tvlauncher.utils.TimeUtil;
-import com.yang.tvlauncher.utils.ToastUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -58,7 +55,7 @@ public class HomeActivity extends Activity {
             } else {
                 sendEmptyMessageDelayed(101, 1000);
             }
-            mReference.get().changeBackground();
+//            mReference.get().changeBackground();
         }
     }
 
@@ -74,6 +71,7 @@ public class HomeActivity extends Activity {
     private OnBannerClickListener onBannerClickListener;
     private int clickPosition;
     private AllAppsDialog mAllAppsDialog;
+    private AllAppsHolder holder;
     private MyHandler mHandler;
     private static final int[] backgroundIds = {R.drawable.bg_default_background, R.drawable.bg_background1, R.drawable.bg_background2, R.drawable.bg_background3, R.drawable.bg_background4};
 
@@ -88,8 +86,17 @@ public class HomeActivity extends Activity {
         initEventListener();
         initClock();
 
+        holder = new AllAppsHolder(this);
+        holder.getData();
         mHandler = new MyHandler(this);
+
+        home_content_ll.setBackgroundResource(R.drawable.bg_background1);
     }
+
+    public ViewGroup getDesktopRootView() {
+        return home_content_ll;
+    }
+
 
     @Override
     protected void onResume() {
@@ -170,14 +177,15 @@ public class HomeActivity extends Activity {
     }
 
     public int backGroundIdIndex = 0;
-    public void changeBackground() {
-        home_content_ll.setBackgroundResource(backgroundIds[backGroundIdIndex]);
-        if (backGroundIdIndex >= 4){
-            backGroundIdIndex = 0;
-        } else {
-            backGroundIdIndex++;
-        }
-    }
+
+//    public void changeBackground() {
+//        home_content_ll.setBackgroundResource(backgroundIds[backGroundIdIndex]);
+//        if (backGroundIdIndex >= 4) {
+//            backGroundIdIndex = 0;
+//        } else {
+//            backGroundIdIndex++;
+//        }
+//    }
 
     public void loadVideoButton() {
         LogUtil.e("---------开始加载Banner---------");
@@ -307,7 +315,8 @@ public class HomeActivity extends Activity {
                             }
                             break;
                         case 8:
-                            mAllAppsDialog.show(getFragmentManager());
+                            if (!holder.isShow()) holder.show();
+//                            mAllAppsDialog.show(getFragmentManager());
                             break;
                     }
                 }
@@ -480,6 +489,7 @@ public class HomeActivity extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        LogUtil.e("onKeyDown : " + keyCode);
         switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 if (mShortCutParent.hasFocus()) {
@@ -505,12 +515,14 @@ public class HomeActivity extends Activity {
             case KeyEvent.KEYCODE_INFO:
                 break;
         }
-        return super.onKeyDown(keyCode, event);
+        boolean handle = super.onKeyDown(keyCode, event);
+        LogUtil.e("onKeyDown : " + keyCode + " : " +handle);
+        return handle;
     }
 
     @Override
     public void onBackPressed() {
-
+        if (holder.isShow()) holder.hide();
     }
 
 

@@ -1,12 +1,10 @@
 package com.yang.tvlauncher.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.youth.banner.loader.ImageLoader;
 
 import java.util.ArrayList;
@@ -45,14 +43,8 @@ public class ImageManager {
 
         @Override
         public void displayImage(Context context, final Object path, ImageView imageView) {
-            Glide.with(context).load(path).asBitmap().centerCrop().into(new BitmapImageViewTarget(imageView) {
-                @Override
-                protected void setResource(Bitmap resource) {
-                    super.setResource(resource);
-                    ImageManager.put(path.toString(), resource);
-                }
-            });
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            Glide.with(context).load(path.toString()).into(imageView);
         }
     }
-
 }

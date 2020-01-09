@@ -1,145 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/home_content_ll"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_default_background"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/home_content_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_default_background"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/main_time_ll"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_gravity="top|left"
+            android:layout_margin="10dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:paddingStart="30dp"
+            android:paddingTop="30dp">
+
+            <TextView
+                android:id="@+id/main_time_tv"
+                android:layout_width="200dp"
+                android:layout_height="110dp"
+                android:layout_centerVertical="true"
+                android:background="#00ffffff"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="70sp" />
+
+            <TextView
+                android:id="@+id/main_date_tv"
+                android:layout_width="200dp"
+                android:layout_height="110dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/main_time_tv"
+                android:background="#00ffffff"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
+                android:lines="2"
+                android:textColor="#ffffff"
+                android:textSize="25sp" />
+
+            <com.yang.tvlauncher.view.FoucsLinearLayout
+                android:id="@+id/home_title_fll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:paddingEnd="60dp">
+
+                <LinearLayout
+                    android:id="@+id/home_bizhi_ll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:descendantFocusability="blocksDescendants"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:onClick="onClick"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/icon_bizhi" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="壁纸"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_clear_ll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:descendantFocusability="blocksDescendants"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:onClick="onClick"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/icon_clear" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="清理"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/home_set_ll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:descendantFocusability="blocksDescendants"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="center_vertical"
+                    android:onClick="onClick"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/icon_settings" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:ellipsize="marquee"
+                        android:text="设置"
+                        android:textColor="#ffffff"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </com.yang.tvlauncher.view.FoucsLinearLayout>
+        </RelativeLayout>
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:descendantFocusability="afterDescendants"
+            android:scrollbars="none">
+
+            <com.yang.tvlauncher.view.FoucsLinearLayout
+                android:id="@+id/home_header_ll"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp">
+
+
+            </com.yang.tvlauncher.view.FoucsLinearLayout>
+        </HorizontalScrollView>
+
+        <com.yang.tvlauncher.view.FoucsLinearLayout
+            android:id="@+id/home_shortcut_fll"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+
+        </com.yang.tvlauncher.view.FoucsLinearLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/main_time_ll"
+        android:id="@+id/home_apps_rl"
         android:layout_width="match_parent"
-        android:layout_height="110dp"
-        android:layout_gravity="top|left"
-        android:layout_margin="10dp"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:paddingStart="30dp"
-        android:paddingTop="30dp">
+        android:layout_height="match_parent"
+        android:background="@color/bg_all_app_list"
+        android:visibility="gone">
 
-        <TextView
-            android:id="@+id/main_time_tv"
-            android:layout_width="200dp"
-            android:layout_height="110dp"
-            android:layout_centerVertical="true"
-            android:background="#00ffffff"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:gravity="center"
-            android:textColor="#ffffff"
-            android:textSize="70sp" />
-
-        <TextView
-            android:id="@+id/main_date_tv"
-            android:layout_width="200dp"
-            android:layout_height="110dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/main_time_tv"
-            android:background="#00ffffff"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:gravity="center"
-            android:lines="2"
-            android:textColor="#ffffff"
-            android:textSize="25sp" />
-
-        <com.yang.tvlauncher.view.FoucsLinearLayout
-            android:id="@+id/home_title_fll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:paddingEnd="60dp">
-
-            <LinearLayout
-                android:id="@+id/home_clear_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:descendantFocusability="blocksDescendants"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:gravity="center_vertical"
-                android:onClick="onClick"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/icon_clear" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:text="清理"
-                    android:textColor="#ffffff"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/home_set_ll"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:descendantFocusability="blocksDescendants"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:gravity="center_vertical"
-                android:onClick="onClick"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/icon_settings" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:ellipsize="marquee"
-                    android:text="设置"
-                    android:textColor="#ffffff"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </com.yang.tvlauncher.view.FoucsLinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/home_apps_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </RelativeLayout>
-
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="2"
-        android:descendantFocusability="afterDescendants"
-        android:scrollbars="none">
-
-        <com.yang.tvlauncher.view.FoucsLinearLayout
-            android:id="@+id/home_header_ll"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingEnd="30dp"
-            android:paddingStart="30dp">
-
-
-        </com.yang.tvlauncher.view.FoucsLinearLayout>
-    </HorizontalScrollView>
-
-    <com.yang.tvlauncher.view.FoucsLinearLayout
-        android:id="@+id/home_shortcut_fll"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-
-    </com.yang.tvlauncher.view.FoucsLinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

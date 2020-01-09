@@ -2,6 +2,7 @@ package com.yang.tvlauncher.request;
 
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.NetUitls;
+import com.yang.tvlauncher.utils.SeekerUtils;
 import com.yang.tvlauncher.utils.StringUtil;
 
 import org.jsoup.Jsoup;
@@ -18,6 +19,8 @@ import java.util.HashMap;
  */
 
 public class YoukuRequest extends BaseRequest {
+
+
     private static ArrayList<HashMap<String, String>> data;
 
     public void request(final ResponseListener listener, boolean refresh) {
@@ -53,6 +56,7 @@ public class YoukuRequest extends BaseRequest {
                         listener.onResponse(null);
                     }
                 }
+
                 @Override
                 public void onFailure(String msg) {
                     listener.onResponse(null);
@@ -61,6 +65,11 @@ public class YoukuRequest extends BaseRequest {
         } else {
             listener.onResponse(data);
         }
+    }
+
+    @Override
+    public void seek(final SeekerUtils.SeekerListener<String> listener, String url) {
+        SeekerUtils.seekBannerImage(url, listener);
     }
 
     public void odlRequest(final ResponseListener listener, boolean refresh) {

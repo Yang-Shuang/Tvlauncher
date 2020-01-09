@@ -1,14 +1,13 @@
 package com.yang.tvlauncher.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by
  * yangshuang on 2018/11/30.
  */
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class HomeRowBean {
+
+public class HomeRowBean  extends BaseListItem{
 
     /**
      * rid : 1

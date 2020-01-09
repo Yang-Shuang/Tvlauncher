@@ -15,6 +15,10 @@ public class AppUtil {
 
     private static Context context;
 
+    public static Context getAppContext(){
+        return context;
+    }
+
     public static void init(Context c) {
         context = c;
     }

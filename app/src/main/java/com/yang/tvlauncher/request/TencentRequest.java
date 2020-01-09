@@ -2,6 +2,7 @@ package com.yang.tvlauncher.request;
 
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.NetUitls;
+import com.yang.tvlauncher.utils.SeekerUtils;
 import com.yang.tvlauncher.utils.StringUtil;
 
 import org.jsoup.Jsoup;
@@ -100,5 +101,10 @@ public class TencentRequest extends BaseRequest {
         } else {
             listener.onResponse(data);
         }
+    }
+
+    @Override
+    public void seek(SeekerUtils.SeekerListener<String> listener, String url) {
+        SeekerUtils.seekBannerImageWithDoMain(url,"puui.qpic.cn" ,listener);
     }
 }

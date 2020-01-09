@@ -1,5 +1,6 @@
 package com.yang.tvlauncher.presenter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -24,6 +25,7 @@ import com.yang.tvlauncher.request.YoukuRequest;
 import com.yang.tvlauncher.utils.ImageManager;
 import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
+import com.yang.tvlauncher.utils.SeekerUtils;
 import com.yang.tvlauncher.utils.StringUtil;
 import com.youth.banner.Banner;
 
@@ -45,6 +47,7 @@ public class HomeVideoButtonHolder {
     public static final String YUNSHITING = "com.ktcp.video";
     public static final String KUMIAO = "com.cibn.tv";
 
+    private List<String> imageUrls = new ArrayList<>();
     private HashMap<String, Object> map;
     private float imageHeight;
     private float imageWidth;
@@ -54,11 +57,11 @@ public class HomeVideoButtonHolder {
     private TextView title;
     private Banner banner;
     private RelativeLayout descLayout;
-    private Context mContext;
+    private Activity mContext;
     private boolean hasStart = false;
 
 
-    public HomeVideoButtonHolder(View view, Context context, int imageHeight) {
+    public HomeVideoButtonHolder(View view, Activity context, int imageHeight) {
         this.mContext = context;
         this.imageHeight = imageHeight;
         this.imageWidth = this.imageHeight / 3f * 5;
@@ -88,6 +91,38 @@ public class HomeVideoButtonHolder {
         banner.setFocusable(false);
         banner.setFocusableInTouchMode(false);
         banner.setDelayTime(5000);
+        banner.isAutoPlay(true);
+
+        banner.setImageLoader(new ImageManager.GlideImageLoader());
+        View viewpager = banner.findViewById(R.id.bannerViewPager);
+        viewpager.setFocusable(false);
+        viewpager.setFocusableInTouchMode(false);
+        banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Bitmap bitmap = null;
+                bitmap = ImageManager.get(imageUrls.get(position));
+                if (bitmap != null) {
+                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                        @Override
+                        public void onGenerated(Palette palette) {
+                            title.setTextColor(palette.getLightVibrantColor(Color.WHITE));
+                            descLayout.setBackgroundColor(palette.getDarkMutedColor(Color.DKGRAY));
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
     public boolean isHasStart() {
@@ -101,7 +136,6 @@ public class HomeVideoButtonHolder {
             icon.setImageDrawable((Drawable) map.get("icon"));
             title.setText(map.get("name").toString());
         }
-        if (hasStart) return;
         requestBannerData();
     }
 
@@ -112,60 +146,36 @@ public class HomeVideoButtonHolder {
     private void requestBannerData() {
         String type = (String) this.map.get("type");
         BaseRequest request = getRequest(type);
-        request.request(new ResponseListener() {
+        if(request == null)return;
+        imageUrls.clear();
+        request.seek(new SeekerUtils.SeekerListener<String>() {
             @Override
-            public void onResponse(List<HashMap<String, String>> data) {
-                if (data != null && data.size() > 0) {
-                    final List<String> imageUrls = new ArrayList<>();
-                    final List<String> imageDescs = new ArrayList<>();
-                    for (HashMap<String, String> map : data) {
-                        imageDescs.add(map.get("name"));
-                        imageUrls.add(map.get("image"));
-                    }
-                    desc.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            banner.setImageLoader(new ImageManager.GlideImageLoader());
-                            banner.setImages(imageUrls);
-                            banner.start();
-                            View viewpager = banner.findViewById(R.id.bannerViewPager);
-                            viewpager.setFocusable(false);
-                            viewpager.setFocusableInTouchMode(false);
-                            hasStart = true;
-                            banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                                @Override
-                                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onSeekUpdate(String s) {
+                LogUtil.e("onSeekUpdate : " + s);
+                imageUrls.add(s);
+                banner.update(new ArrayList<>(imageUrls));
+            }
 
-                                }
-
-                                @Override
-                                public void onPageSelected(int position) {
-                                    desc.setText(imageDescs.get(position));
-                                    Bitmap bitmap = null;
-                                    bitmap = ImageManager.get(imageUrls.get(position));
-                                    if (bitmap != null) {
-                                        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                                            @Override
-                                            public void onGenerated(Palette palette) {
-                                                desc.setTextColor(palette.getLightVibrantColor(Color.WHITE));
-                                                title.setTextColor(palette.getLightVibrantColor(Color.WHITE));
-                                                descLayout.setBackgroundColor(palette.getDarkMutedColor(Color.DKGRAY));
-                                            }
-                                        });
-                                    }
-                                }
-
-                                @Override
-                                public void onPageScrollStateChanged(int state) {
-                                }
-                            });
-                        }
-                    });
-                }
+            @Override
+            public void onSeekComplete(List<String> strings) {
 
             }
-        }, firstLoad);
-        firstLoad = false;
+
+            @Override
+            public void onSeekError(String msg) {
+
+            }
+
+            @Override
+            public void onSeekTitle(String title) {
+                desc.setText(title);
+            }
+
+            @Override
+            public boolean isExclude(String s) {
+                return false;
+            }
+        },getRequestUrl(type));
     }
 
     private BaseRequest getRequest(String type) {
@@ -175,6 +185,17 @@ public class HomeVideoButtonHolder {
             return new TencentRequest();
         } else if (type.equals(KUMIAO)) {
             return new YoukuRequest();
+        }
+        return null;
+    }
+
+    private String getRequestUrl(String type) {
+        if (type.equals(IQIYI)) {
+            return "https://www.iqiyi.com/";
+        } else if (type.equals(YUNSHITING)) {
+            return "https://v.qq.com/";
+        } else if (type.equals(KUMIAO)) {
+            return "https://www.youku.com/";
         }
         return null;
     }
