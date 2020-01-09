@@ -20,6 +20,7 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 #通用配置
+-ignorewarnings
 -keepattributes *Annotation*
 -keepattributes *JavascriptInterface*
 -keep class **.R$* { *; }
