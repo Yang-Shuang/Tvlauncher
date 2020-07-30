@@ -31,6 +31,7 @@ public class YoukuRequest extends BaseRequest {
                 public void onResponse(String htmlString) {
                     if (htmlString != null && !htmlString.equals("")) {
                         Document document = Jsoup.parse(htmlString);
+//                        document.
                         Elements childs = document.body().getElementsByClass("focusswiper_focus_item");
                         if (childs.size() > 0) {
                             ArrayList<HashMap<String, String>> data = new ArrayList<>();
