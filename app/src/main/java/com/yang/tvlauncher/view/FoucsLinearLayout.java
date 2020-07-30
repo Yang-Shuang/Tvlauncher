@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import com.daimajia.androidanimations.library.BaseViewAnimator;
 import com.daimajia.androidanimations.library.YoYo;
 import com.yang.tvlauncher.R;
-import com.yang.tvlauncher.utils.LogUtil;
 
 /**
  * Created by yangshuang
@@ -23,6 +22,7 @@ public class FoucsLinearLayout extends LinearLayout {
     private int highLightType;
     private static final int ZOOM = 0;
     private static final int BACKGROUND = 1;
+    private static final int STROKE = 2;
 
     public FoucsLinearLayout(Context context) {
         super(context);
@@ -85,10 +85,10 @@ public class FoucsLinearLayout extends LinearLayout {
     }
 
     private void zoom(boolean hasFocus, View v) {
-        final float startX = hasFocus ? 1f : 1.15f;
-        final float endX = hasFocus ? 1.15f : 1f;
-        final float startY = hasFocus ? 1f : 1.15f;
-        final float endY = hasFocus ? 1.15f : 1f;
+        final float startX = hasFocus ? 1f : 1.10f;
+        final float endX = hasFocus ? 1.10f : 1f;
+        final float startY = hasFocus ? 1f : 1.10f;
+        final float endY = hasFocus ? 1.10f : 1f;
         YoYo.with(new BaseViewAnimator() {
             @Override
             protected void prepare(View target) {

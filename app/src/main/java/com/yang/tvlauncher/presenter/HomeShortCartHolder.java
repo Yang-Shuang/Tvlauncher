@@ -25,15 +25,15 @@ public class HomeShortCartHolder {
         icon = view.findViewById(R.id.home_shortcut_item_icon);
         name = view.findViewById(R.id.home_shortcut_item_name);
 
-        int height = (int) ((ScreenUtil.screen_height - ScreenUtil.dp2px(80)) / 9f * 2);
-        int width = (int) (height / 2f * 1);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
-        params.leftMargin = ScreenUtil.dp2px(25);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-2, -2);
+        params.leftMargin = ScreenUtil.dp2px(10);
         view.setLayoutParams(params);
 
+        // 左右40 + 40   view间距25   padding 10  40 + 40 + 10 * 8 + 10
+        int imageSize = (ScreenUtil.screen_height - ScreenUtil.dp2px(170)) / 9;
         LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) icon.getLayoutParams();
-        p.width = width;
-        p.height = width;
+        p.width = imageSize;
+        p.height = imageSize;
         icon.setLayoutParams(p);
     }
 

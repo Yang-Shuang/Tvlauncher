@@ -2,6 +2,7 @@ package com.yang.tvlauncher;
 
 import android.app.Application;
 
+import com.orhanobut.hawk.Hawk;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.ImageManager;
 import com.yang.tvlauncher.utils.ScreenUtil;
@@ -24,6 +25,6 @@ public class TVApplication extends Application {
         TvExceptionHandler.init(this);
         ImageManager.init();
         AppUtil.init(this);
-
+        Hawk.init(this).build();
     }
 }

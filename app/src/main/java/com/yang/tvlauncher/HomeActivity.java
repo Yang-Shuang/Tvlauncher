@@ -3,19 +3,15 @@ package com.yang.tvlauncher;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.yang.tvlauncher.presenter.HomeShortCartHolder;
-import com.yang.tvlauncher.presenter.HomeVideoButtonHolder;
 import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.utils.AppUtil;
 import com.yang.tvlauncher.utils.DataManager;
@@ -23,10 +19,11 @@ import com.yang.tvlauncher.utils.LogUtil;
 import com.yang.tvlauncher.utils.ScreenUtil;
 import com.yang.tvlauncher.utils.StringUtil;
 import com.yang.tvlauncher.utils.TimeUtil;
+import com.yang.tvlauncher.view.KuMiaoVideoButton;
+import com.yang.tvlauncher.view.QiYiGuoVideoButton;
+import com.yang.tvlauncher.view.TencentVideoButton;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -36,61 +33,39 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS;
-
 public class HomeActivity extends Activity {
 
-    private static class MyHandler extends Handler {
-        WeakReference<HomeActivity> mReference;
-
-        public MyHandler(HomeActivity activity) {
-            mReference = new WeakReference<HomeActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (AppUtil.isNetworkAvailable(mReference.get())) {
-                mReference.get().loadVideoButton();
-            } else {
-                sendEmptyMessageDelayed(101, 1000);
-            }
-//            mReference.get().changeBackground();
-        }
-    }
-
-    private float imageHeight;
     private TextView timeTv, dateTv;
-    private Disposable subscription;
-    private LinearLayout mParent;
+
+    private QiYiGuoVideoButton qiYiGuoVideoButton;
+    private TencentVideoButton tencentVideoButton;
+    private KuMiaoVideoButton kuMiaoVideoButton;
+
     private LinearLayout mShortCutParent;
     private ChooseShortCutDialog dialog;
     private LinearLayout home_content_ll;
 
+    private Disposable subscription;
     private OnShortCutsClickListener onShortCutsClickListener;
-    private OnBannerClickListener onBannerClickListener;
+
     private int clickPosition;
-    private AllAppsDialog mAllAppsDialog;
-    private AllAppsHolder holder;
-    private MyHandler mHandler;
+    private AllAppsHolder allAppsHolder;
+    private SettingsHolder settingsHolder;
+    private HomeActivity mActivity;
+
     private static final int[] backgroundIds = {R.drawable.bg_default_background, R.drawable.bg_background1, R.drawable.bg_background2, R.drawable.bg_background3, R.drawable.bg_background4};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         DataManager.getInstance(HomeActivity.this).initDataBases();
         DataManager.getInstance(HomeActivity.this).getPackageInfos();
 
         initView();
         initEventListener();
         initClock();
-
-        holder = new AllAppsHolder(this);
-        holder.getData();
-        mHandler = new MyHandler(this);
-
-        home_content_ll.setBackgroundResource(R.drawable.bg_background1);
     }
 
     public ViewGroup getDesktopRootView() {
@@ -101,7 +76,7 @@ public class HomeActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        mHandler.sendEmptyMessage(101);
+        loadVideoButton();
         loadShortCut();
     }
 
@@ -124,20 +99,25 @@ public class HomeActivity extends Activity {
     }
 
     private void initView() {
-        mParent = findViewById(R.id.home_header_ll);
+
         home_content_ll = findViewById(R.id.home_content_ll);
         mShortCutParent = findViewById(R.id.home_shortcut_fll);
+
         timeTv = findViewById(R.id.main_time_tv);
         dateTv = findViewById(R.id.main_date_tv);
 
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mParent.getLayoutParams();
-        params.height = (int) ((ScreenUtil.screen_height - ScreenUtil.dp2px(110)) / 3f * 2);
-
-        imageHeight = params.height / 2;
-        mParent.setLayoutParams(params);
-        mParent.setDescendantFocusability(FOCUS_AFTER_DESCENDANTS);
+        qiYiGuoVideoButton = findViewById(R.id.qiyiguo);
+        tencentVideoButton = findViewById(R.id.tencent);
+        kuMiaoVideoButton = findViewById(R.id.kumiao);
 
         mShortCutParent.setPadding(ScreenUtil.dp2px(20), 0, ScreenUtil.dp2px(20), 0);
+
+        allAppsHolder = new AllAppsHolder(this);
+        allAppsHolder.getData();
+
+        settingsHolder = new SettingsHolder(this);
+
+        home_content_ll.setBackgroundResource(R.drawable.bg_background1);
     }
 
     private void initClock() {
@@ -162,9 +142,6 @@ public class HomeActivity extends Activity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.home_clear_ll:
-//                changeBackground();
-                //com.coolux.clearnup
-//                ToastUtil.toast("别点了，功能没加呢");
                 Intent intent = AppUtil.getAppIntent("com.coolux.clearnup");
                 if (intent != null) {
                     startActivity(intent);
@@ -178,34 +155,26 @@ public class HomeActivity extends Activity {
 
     public int backGroundIdIndex = 0;
 
-//    public void changeBackground() {
-//        home_content_ll.setBackgroundResource(backgroundIds[backGroundIdIndex]);
-//        if (backGroundIdIndex >= 4) {
-//            backGroundIdIndex = 0;
-//        } else {
-//            backGroundIdIndex++;
-//        }
-//    }
-
-    public void loadVideoButton() {
-        LogUtil.e("---------开始加载Banner---------");
-        checkIqiyiAndLoad();
-        checkTencentAndLoad();
-        checkYoukuAndLoad();
-        if (!mParent.hasFocus() && !mShortCutParent.hasFocus()) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mParent.getChildCount() > 0 && !mParent.getChildAt(0).hasFocus()) {
-                        mParent.getChildAt(0).requestFocus();
-                    }
-                }
-            }, 500);
+    public void changeBackground() {
+        home_content_ll.setBackgroundResource(backgroundIds[backGroundIdIndex]);
+        if (backGroundIdIndex >= 4) {
+            backGroundIdIndex = 0;
+        } else {
+            backGroundIdIndex++;
         }
     }
 
+    public void loadVideoButton() {
+        qiYiGuoVideoButton.setSimpleImage(settingsHolder.isSimple());
+        tencentVideoButton.setSimpleImage(settingsHolder.isSimple());
+        kuMiaoVideoButton.setSimpleImage(settingsHolder.isSimple());
+
+        qiYiGuoVideoButton.load();
+        tencentVideoButton.load();
+        kuMiaoVideoButton.load();
+    }
+
     private void loadShortCut() {
-        LogUtil.e("---------开始加载快捷方式---------");
         for (int i = 0; i < 9; i++) {
             HomeShortCartHolder holder = null;
             View parent = null;
@@ -222,11 +191,6 @@ public class HomeActivity extends Activity {
                 mShortCutParent.addView(parent);
             }
             AppInfoBean bean = null;
-//            if (i == 7) {
-//                bean = new AppInfoBean();
-//                bean.setAppName("系统设置");
-//                bean.setAppIcon(getResources().getDrawable(R.drawable.icon_sys_settings));
-//            } else
             if (i == 8) {
                 bean = new AppInfoBean();
                 bean.setAppName("全部程序");
@@ -253,37 +217,7 @@ public class HomeActivity extends Activity {
 
     private void initEventListener() {
         initDialog();
-        if (onBannerClickListener == null) {
-            onBannerClickListener = new OnBannerClickListener() {
-                @Override
-                public void onItemClick(int position, Object data) {
-                    clickPosition = position;
-                    switch (position) {
-                        case 101:
-                        case 102:
-                        case 103:
-                            HashMap<String, Object> map = (HashMap<String, Object>) data;
-                            String packageName = (String) map.get("package");
-                            if (StringUtil.isEmpty(packageName)) {
-                                ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
-                                AppInfoBean bean = new AppInfoBean();
-                                bean.setAppName("清除");
-                                bean.setAppIcon(getResources().getDrawable(R.drawable.icon_delete));
-                                beans.add(bean);
-                                dialog.setData(beans);
-                                dialog.show(getFragmentManager());
-                            } else {
-                                Intent intent = AppUtil.getAppIntent(packageName);
-                                if (intent != null) {
-                                    startActivity(intent);
-                                }
-                            }
-                        default:
-                            break;
-                    }
-                }
-            };
-        }
+
         if (onShortCutsClickListener == null) {
             onShortCutsClickListener = new OnShortCutsClickListener() {
                 @Override
@@ -315,8 +249,7 @@ public class HomeActivity extends Activity {
                             }
                             break;
                         case 8:
-                            if (!holder.isShow()) holder.show();
-//                            mAllAppsDialog.show(getFragmentManager());
+                            if (!allAppsHolder.isShow()) allAppsHolder.show();
                             break;
                     }
                 }
@@ -343,147 +276,12 @@ public class HomeActivity extends Activity {
                         parent.setTag(R.id.viewData, bean);
                         holder.setData(bean);
                     }
-                } else {
-                    if (mParent.getChildAt(clickPosition - 101) != null) {
-                        View parent = mParent.getChildAt(clickPosition - 101);
-                        if (!StringUtil.isEmpty(bean.getPackageName())) {
-                            DataManager.getInstance(HomeActivity.this).saveHomeVideoApp(clickPosition - 101, bean.getPackageName());
-                        } else {
-                            return;
-                        }
-                        HomeVideoButtonHolder holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-                        HashMap<String, Object> map = holder.getData();
-                        map.put("name", bean.getAppName());
-                        map.put("package", bean.getPackageName());
-                        map.put("icon", bean.getAppIcon());
-                        parent.setTag(R.id.viewData, map);
-                        holder.setData(map);
-                    }
                 }
-            }
-        });
-        mAllAppsDialog = new AllAppsDialog();
-    }
-
-    private void checkIqiyiAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(0);
-        if (bean == null) {
-            bean = DataManager.getInstance(this).getMatchingApp("银河奇异果", HomeVideoButtonHolder.IQIYI);
-            if (bean != null) {
-                DataManager.getInstance(this).saveHomeVideoApp(0, bean.getPackageName());
-            }
-        }
-        View parent = null;
-        HomeVideoButtonHolder holder = null;
-        if (mParent.getChildCount() == 0) {
-            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-            parent.setTag(R.id.viewHolder, holder);
-            mParent.addView(parent);
-        } else {
-            parent = mParent.getChildAt(0);
-            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-        }
-        if (holder.isHasStart()) return;
-        HashMap<String, Object> iqiyiData = new HashMap<>();
-        iqiyiData.put("type", HomeVideoButtonHolder.IQIYI);
-        if (bean != null) {
-            iqiyiData.put("name", bean.getAppName());
-            iqiyiData.put("package", bean.getPackageName());
-            iqiyiData.put("icon", bean.getAppIcon());
-        }
-        parent.setTag(R.id.viewData, iqiyiData);
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBannerClickListener.onItemClick(101, v.getTag(R.id.viewData));
-            }
-        });
-        holder.setData(iqiyiData);
-    }
-
-    private void checkTencentAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(1);
-        if (bean == null) {
-            bean = DataManager.getInstance(this).getMatchingApp("云视听极光", HomeVideoButtonHolder.YUNSHITING);
-            if (bean != null) {
-                DataManager.getInstance(this).saveHomeVideoApp(1, bean.getPackageName());
-            }
-        }
-        View parent = null;
-        HomeVideoButtonHolder holder = null;
-        if (mParent.getChildAt(1) == null) {
-            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-            parent.setTag(R.id.viewHolder, holder);
-            mParent.addView(parent);
-        } else {
-            parent = mParent.getChildAt(1);
-            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-        }
-        if (holder.isHasStart()) return;
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("type", HomeVideoButtonHolder.YUNSHITING);
-        if (bean != null) {
-            data.put("name", bean.getAppName());
-            data.put("package", bean.getPackageName());
-            data.put("icon", bean.getAppIcon());
-        }
-        parent.setTag(R.id.viewData, data);
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBannerClickListener.onItemClick(102, v.getTag(R.id.viewData));
-            }
-        });
-        holder.setData(data);
-    }
-
-    private void checkYoukuAndLoad() {
-        AppInfoBean bean = DataManager.getInstance(this).getHomeVideoApp(2);
-        if (bean == null) {
-            bean = DataManager.getInstance(this).getMatchingApp("CIBN酷喵影视", HomeVideoButtonHolder.KUMIAO);
-            if (bean != null) {
-                DataManager.getInstance(this).saveHomeVideoApp(2, bean.getPackageName());
-            }
-        }
-        View parent = null;
-        HomeVideoButtonHolder holder = null;
-        if (mParent.getChildAt(2) == null) {
-            parent = LayoutInflater.from(this).inflate(R.layout.item_video_button, null);
-            holder = new HomeVideoButtonHolder(parent, this, (int) imageHeight);
-            ((LinearLayout.LayoutParams) parent.getLayoutParams()).leftMargin = ScreenUtil.dp2px(25);
-            parent.setTag(R.id.viewHolder, holder);
-            mParent.addView(parent);
-        } else {
-            parent = mParent.getChildAt(2);
-            holder = (HomeVideoButtonHolder) parent.getTag(R.id.viewHolder);
-        }
-        if (holder.isHasStart()) return;
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("type", HomeVideoButtonHolder.KUMIAO);
-        if (bean != null) {
-            data.put("name", bean.getAppName());
-            data.put("package", bean.getPackageName());
-            data.put("icon", bean.getAppIcon());
-        }
-        holder.setData(data);
-        parent.setTag(R.id.viewData, data);
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBannerClickListener.onItemClick(103, v.getTag(R.id.viewData));
             }
         });
     }
 
     private interface OnShortCutsClickListener {
-        void onItemClick(int position, Object data);
-    }
-
-    private interface OnBannerClickListener {
         void onItemClick(int position, Object data);
     }
 
@@ -501,29 +299,27 @@ public class HomeActivity extends Activity {
                     beans.add(bean);
                     dialog.setData(beans);
                     dialog.show(getFragmentManager());
-                } else if (mParent.hasFocus()) {
-                    clickPosition = 101 + mParent.indexOfChild(mParent.getFocusedChild());
-                    ArrayList<AppInfoBean> beans = DataManager.getInstance(HomeActivity.this).getAllApps();
-                    AppInfoBean bean = new AppInfoBean();
-                    bean.setAppName("清除");
-                    bean.setAppIcon(getResources().getDrawable(R.drawable.icon_delete));
-                    beans.add(bean);
-                    dialog.setData(beans);
-                    dialog.show(getFragmentManager());
+                } else {
+                    if (!settingsHolder.isShow())
+                        settingsHolder.show();
                 }
                 break;
             case KeyEvent.KEYCODE_INFO:
                 break;
         }
         boolean handle = super.onKeyDown(keyCode, event);
-        LogUtil.e("onKeyDown : " + keyCode + " : " +handle);
+        LogUtil.e("onKeyDown : " + keyCode + " : " + handle);
         return handle;
     }
 
     @Override
     public void onBackPressed() {
-        if (holder.isShow()) holder.hide();
-    }
+        if (allAppsHolder.isShow()) allAppsHolder.hide();
 
+        if (settingsHolder.isShow()) {
+            settingsHolder.hide();
+            loadVideoButton();
+        }
+    }
 
 }
