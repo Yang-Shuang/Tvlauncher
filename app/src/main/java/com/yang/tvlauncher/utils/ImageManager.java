@@ -19,10 +19,14 @@ import java.util.Random;
 public class ImageManager {
 
     private static HashMap<String, Bitmap> bitmapHashMap;
+    private static HashMap<String, String> imageDesc;
 
     public static void init() {
         if (bitmapHashMap == null)
             bitmapHashMap = new HashMap<>();
+
+        if (imageDesc == null)
+            imageDesc = new HashMap<>();
     }
 
     public static Bitmap getRandomBitmap() {
@@ -35,8 +39,16 @@ public class ImageManager {
         bitmapHashMap.put(key, bitmap);
     }
 
+    public static void put(String key, String desc) {
+        imageDesc.put(key, desc);
+    }
+
     public static Bitmap get(String key) {
         return bitmapHashMap.get(key);
+    }
+
+    public static String getTitle(String key) {
+        return imageDesc.get(key);
     }
 
     public static class GlideImageLoader extends ImageLoader {

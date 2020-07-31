@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Looper;
 
 /**
  * Created by
@@ -15,7 +16,7 @@ public class AppUtil {
 
     private static Context context;
 
-    public static Context getAppContext(){
+    public static Context getAppContext() {
         return context;
     }
 
@@ -47,5 +48,10 @@ public class AppUtil {
         return false;
     }
 
-    public static void runAsynTask(){}
+    public static boolean isMainThread() {
+        return Looper.getMainLooper() == Looper.myLooper();
+    }
+
+    public static void runAsynTask() {
+    }
 }

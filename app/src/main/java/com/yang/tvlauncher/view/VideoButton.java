@@ -66,6 +66,11 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
                         }
                     }
                     break;
+                case 105:
+                    if (isAttach()) {
+                        reference.get().updateImage((String) msg.obj);
+                    }
+                    break;
             }
         }
 
@@ -149,9 +154,14 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
                         @Override
                         public void onGenerated(Palette palette) {
                             appName.setTextColor(palette.getLightVibrantColor(Color.WHITE));
+                            appDesc.setTextColor(palette.getLightVibrantColor(Color.WHITE));
                             appInfo.setBackgroundColor(palette.getDarkMutedColor(Color.DKGRAY));
                         }
                     });
+                }
+                String title = ImageManager.getTitle(imageUrls.get(position));
+                if (title != null && !"".equals(title)) {
+                    appDesc.setText(title);
                 }
             }
 
@@ -190,6 +200,12 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
         }
     }
 
+    void updateImage(String s) {
+        if (s == null || "".equals(s)) return;
+        imageUrls.add(s);
+        banner.update(new ArrayList<>(imageUrls));
+    }
+
     private void requestData() {
 
         BaseRequest request = getRequest();
@@ -200,8 +216,7 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
             @Override
             public void onSeekUpdate(String s) {
                 LogUtil.e("onSeekUpdate : " + s);
-                imageUrls.add(s);
-                banner.update(new ArrayList<>(imageUrls));
+                handler.sendMessage(handler.obtainMessage(105, s));
             }
 
             @Override
