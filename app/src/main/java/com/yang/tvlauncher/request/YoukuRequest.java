@@ -160,9 +160,12 @@ public class YoukuRequest extends BaseRequest {
 
     private void onSeekUrl(final SeekerUtils.SeekerListener<String> listener, final String url) {
         try {
-            Bitmap bitmap = Glide.with(AppUtil.getAppContext()).asBitmap().load(url).submit().get();
-            if (bitmap == null) return;
-            ImageManager.put(url, bitmap);
+            if (StringUtil.isEmpty(url)) return;
+            if (ImageManager.get(url) == null) {
+                Bitmap bitmap = Glide.with(AppUtil.getAppContext()).asBitmap().load(url).submit().get();
+                if (bitmap == null) return;
+                ImageManager.put(url, bitmap);
+            }
             handler.post(new Runnable() {
                 @Override
                 public void run() {

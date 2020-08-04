@@ -207,6 +207,8 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
     }
 
     private void requestData() {
+        //每次启动只爬一次数据，如有数据则不在运行爬虫代码
+        if (imageUrls.size() != 0) return;
 
         BaseRequest request = getRequest();
         if (request == null) return;

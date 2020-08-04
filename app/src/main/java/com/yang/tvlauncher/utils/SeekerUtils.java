@@ -190,24 +190,34 @@ public class SeekerUtils {
             LogUtil.e(host + " 过滤banner图片 ： 个数 ： " + list.size());
             long time = System.currentTimeMillis();
             for (final String url : list) {
-                Bitmap bitmap = null;
-                try {
-                    bitmap = Glide.with(AppUtil.getAppContext()).asBitmap().load(url).submit().get();
-//                    bitmap = Picasso.with(AppUtil.getAppContext()).load(url).get();
-                    // 高度在500至650之间，宽度大于1000 视为banner大图片
-                } catch (Exception e) {
-                }
-                if (bitmap == null) continue;
-                //
-                if (!listener.isExclude(url) && bitmap.getHeight() > 500 && bitmap.getHeight() < 650 && bitmap.getWidth() > 1000 && bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2) != 0) {
-                    newList.add(url);
-                    ImageManager.put(url, bitmap);
+                if (StringUtil.isEmpty(url)) continue;
+                if (ImageManager.get(url) != null) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
                             listener.onSeekUpdate(url);
                         }
                     });
+                } else {
+                    try {
+                        Bitmap bitmap = Glide.with(AppUtil.getAppContext()).asBitmap().load(url).submit().get();
+//                    bitmap = Picasso.with(AppUtil.getAppContext()).load(url).get();
+                        // 高度在500至650之间，宽度大于1000 视为banner大图片
+                        if (bitmap == null) continue;
+                        if (!listener.isExclude(url) && bitmap.getHeight() > 500 && bitmap.getHeight() < 650 && bitmap.getWidth() > 1000 && bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2) != 0) {
+                            newList.add(url);
+                            ImageManager.put(url, bitmap);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onSeekUpdate(url);
+                                }
+                            });
+                        } else {
+                            bitmap.recycle();
+                        }
+                    } catch (Exception ignored) {
+                    }
                 }
             }
             long remind = System.currentTimeMillis() - time;
