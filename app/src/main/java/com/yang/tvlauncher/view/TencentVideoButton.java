@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import com.yang.tvlauncher.R;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.request.BaseRequest;
 import com.yang.tvlauncher.request.TencentRequest;
 import com.yang.tvlauncher.utils.DataManager;
@@ -24,7 +25,6 @@ public class TencentVideoButton extends VideoButton {
 
     public TencentVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mAppInfoBean = DataManager.getInstance(getContext()).getMatchingApp("云视听极光", packageName);
     }
 
     public TencentVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -44,5 +44,10 @@ public class TencentVideoButton extends VideoButton {
     @Override
     protected int getMainImageResource() {
         return R.drawable.bg_tencent;
+    }
+
+    @Override
+    protected AppInfoBean getAppInfoBean() {
+        return DataManager.getInstance(getContext()).getMatchingApp("云视听极光", packageName);
     }
 }

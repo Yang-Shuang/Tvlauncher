@@ -6,6 +6,7 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.gson.reflect.TypeToken;
 import com.yang.tvlauncher.BuildConfig;
 import com.yang.tvlauncher.bean.CategoryBean;
 import com.yang.tvlauncher.bean.DBInfoBean;
@@ -79,7 +80,7 @@ public class TVDataHelper extends SQLiteOpenHelper {
         LogUtil.i("增加默认行信息...");
         try {
             InputStream s = mContext.getAssets().open("default_rows.json");
-            List<HomeRowBean> beans = JsonParser.jsonFile2List(s, HomeRowBean.class);
+            List<HomeRowBean> beans = JsonParser.jsonFile2List(s, new TypeToken<List<HomeRowBean>>(){}.getType());
             for (HomeRowBean bean : beans) {
                 ContentValues values = new ContentValues();
                 values.put("rid", bean.getRid());
@@ -96,7 +97,7 @@ public class TVDataHelper extends SQLiteOpenHelper {
         LogUtil.i("增加默认分类信息...");
         try {
             InputStream s = mContext.getAssets().open("category.json");
-            List<CategoryBean> beans = JsonParser.jsonFile2List(s, CategoryBean.class);
+            List<CategoryBean> beans = JsonParser.jsonFile2List(s, new TypeToken<List<CategoryBean>>(){}.getType());
             for (CategoryBean bean : beans) {
                 ContentValues values = new ContentValues();
                 values.put("cid", bean.getCid());

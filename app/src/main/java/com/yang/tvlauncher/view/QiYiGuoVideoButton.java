@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import com.yang.tvlauncher.R;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.request.BaseRequest;
 import com.yang.tvlauncher.request.IqiyiRequest;
 import com.yang.tvlauncher.utils.DataManager;
@@ -25,7 +26,6 @@ public class QiYiGuoVideoButton extends VideoButton {
 
     public QiYiGuoVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mAppInfoBean = DataManager.getInstance(getContext()).getMatchingApp("银河奇异果", packageName);
     }
 
     public QiYiGuoVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -45,5 +45,10 @@ public class QiYiGuoVideoButton extends VideoButton {
     @Override
     protected int getMainImageResource() {
         return R.drawable.bg_gitv;
+    }
+
+    @Override
+    protected AppInfoBean getAppInfoBean() {
+        return DataManager.getInstance(getContext()).getMatchingApp("银河奇异果", packageName);
     }
 }

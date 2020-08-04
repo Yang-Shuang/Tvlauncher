@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
 import com.yang.tvlauncher.R;
+import com.yang.tvlauncher.bean.AppInfoBean;
 import com.yang.tvlauncher.request.BaseRequest;
 import com.yang.tvlauncher.request.TencentRequest;
 import com.yang.tvlauncher.request.YoukuRequest;
@@ -25,7 +26,6 @@ public class KuMiaoVideoButton extends VideoButton {
 
     public KuMiaoVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mAppInfoBean = DataManager.getInstance(getContext()).getMatchingApp("CIBN酷喵影视", packageName);
     }
 
     public KuMiaoVideoButton(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
@@ -45,5 +45,10 @@ public class KuMiaoVideoButton extends VideoButton {
     @Override
     protected int getMainImageResource() {
         return R.drawable.bg_kumiao;
+    }
+
+    @Override
+    protected AppInfoBean getAppInfoBean() {
+        return DataManager.getInstance(getContext()).getMatchingApp("CIBN酷喵影视", packageName);
     }
 }

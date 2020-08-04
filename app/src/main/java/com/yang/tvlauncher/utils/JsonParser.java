@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -69,7 +70,7 @@ public class JsonParser {
         }
     }
 
-    public static <T> List<T> jsonFile2List(InputStream stream, Class<T> clazz) throws IOException {
+    public static List jsonFile2List(InputStream stream, Type type) throws IOException {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(stream));
             // 创建StringBuffer
@@ -83,7 +84,7 @@ public class JsonParser {
                     String presonsString = stringBuffer.toString();
                     // 解析,创建Gson,需要导入gson的jar包
                     Gson gson = new Gson();
-                    return gson.fromJson(presonsString,new TypeToken<List<T>>(){}.getType());
+                    return gson.fromJson(presonsString, type);
             } catch (IOException e) {
                     e.printStackTrace();
                     return null;

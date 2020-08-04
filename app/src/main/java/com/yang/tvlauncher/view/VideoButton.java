@@ -184,6 +184,10 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
     }
 
     private void loadData() {
+        if (mAppInfoBean == null) {
+            mAppInfoBean = getAppInfoBean();
+        }
+
         if (isSimpleImage()) {
             mainImage.setVisibility(VISIBLE);
             content.setVisibility(GONE);
@@ -249,6 +253,8 @@ public abstract class VideoButton extends FrameLayout implements View.OnClickLis
     protected abstract String getRequestUrl();
 
     protected abstract int getMainImageResource();
+
+    protected abstract AppInfoBean getAppInfoBean();
 
     public void load() {
         if (handler != null)
